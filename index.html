@@ -770,38 +770,142 @@ html>body{padding:0}</style>
 
 <style>
   :root {
-    color-scheme: dark;
-    --sage: light-dark(rgb(91 119 97), rgb(164 195 170));
-    --sage-soft: light-dark(rgb(225 234 222), rgb(45 62 49));
-    --dusty-pink: light-dark(rgb(194 145 154), rgb(226 177 185));
-    --dusty-pink-soft: light-dark(rgb(242 221 225), rgb(77 53 59));
-    --background: light-dark(rgb(242 245 239), rgb(24 29 25));
-    --foreground: light-dark(rgb(38 48 40), rgb(246 248 244));
-    --card: light-dark(rgb(255 255 255 / 72%), rgb(255 255 255 / 6%));
+    color-scheme: light;
+    --sage: rgb(112 146 107);
+    --sage-soft: rgb(235 244 225);
+    --cream: rgb(252 248 240);
+    --blush: rgb(241 187 195);
+    --blush-soft: rgb(251 233 236);
+    --sun: rgb(255 206 98);
+    --lilac: rgb(170 139 214);
+    --mint: rgb(144 203 179);
+    --background: linear-gradient(135deg, rgb(255 247 239) 0%, rgb(245 238 255) 45%, rgb(235 248 240) 100%);
+    --foreground: rgb(68 54 44);
+    --card: rgb(255 255 255 / 78%);
     --card-foreground: var(--foreground);
     --primary: var(--sage);
-    --primary-foreground: light-dark(rgb(255 255 255), rgb(19 27 21));
-    --secondary: light-dark(rgb(250 248 246 / 94%), rgb(52 59 53 / 94%));
+    --primary-foreground: rgb(255 255 255);
+    --secondary: rgb(255 252 247);
     --secondary-foreground: var(--foreground);
-    --muted: color-mix(in srgb, var(--sage) 12%, transparent);
-    --muted-foreground: light-dark(rgb(55 70 59 / 72%), rgb(235 241 233 / 68%));
-    --accent: var(--dusty-pink-soft);
-    --accent-foreground: light-dark(rgb(113 65 75), rgb(255 224 230));
-    --border: color-mix(in srgb, var(--sage) 20%, transparent);
-    --input: color-mix(in srgb, var(--sage) 14%, transparent);
-    --ring: var(--sage);
+    --muted: rgb(244 232 220);
+    --muted-foreground: rgb(101 88 79);
+    --accent: var(--blush-soft);
+    --accent-foreground: rgb(138 72 95);
+    --border: rgb(187 155 126 / 24%);
+    --input: rgb(221 205 185 / 46%);
+    --ring: var(--lilac);
     --viz-series-1: var(--sage);
-    --viz-series-2: var(--dusty-pink);
-    --viz-series-3: light-dark(rgb(143 170 139), rgb(174 207 168));
-    --viz-series-4: light-dark(rgb(217 169 176), rgb(239 190 198));
-    --viz-series-5: light-dark(rgb(123 145 112), rgb(193 211 184));
-    --viz-series-6: light-dark(rgb(172 126 139), rgb(218 166 181));
+    --viz-series-2: var(--blush);
+    --viz-series-3: var(--sun);
+    --viz-series-4: var(--lilac);
+    --viz-series-5: var(--mint);
+    --viz-series-6: rgb(227 147 158);
+  }
+  body {
+    min-height: 100vh;
+    padding: 16px;
+    background: var(--background);
+    color: var(--foreground);
+    position: relative;
+    overflow-x: hidden;
+    font-family: "Segoe UI", "Trebuchet MS", "Palatino Linotype", "Book Antiqua", serif;
+  }
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    inset: auto auto -20px -20px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(255 215 135 / 65%) 0%, rgb(255 215 135 / 0%) 70%);
+    pointer-events: none;
+    filter: blur(12px);
+    opacity: 0.8;
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+  body::after {
+    inset: -30px -30px auto auto;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgb(236 184 220 / 55%) 0%, rgb(236 184 220 / 0%) 72%);
+    animation: drift 10s ease-in-out infinite alternate-reverse;
+  }
+  #wedding-planner-app::before,
+  #wedding-planner-app::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    width: 120px;
+    height: 120px;
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle at 50% 50%, rgb(255 220 160 / 70%) 0 8%, transparent 8.5%),
+      radial-gradient(circle at 35% 35%, rgb(217 154 183 / 70%) 0 7%, transparent 7.5%),
+      radial-gradient(circle at 65% 35%, rgb(152 199 166 / 65%) 0 6%, transparent 6.5%),
+      radial-gradient(circle at 35% 65%, rgb(160 140 211 / 65%) 0 5.5%, transparent 6%),
+      radial-gradient(circle at 65% 65%, rgb(241 190 142 / 70%) 0 6.5%, transparent 7%);
+    filter: blur(1px);
+  }
+  #wedding-planner-app::before {
+    left: -56px;
+    transform: rotate(-12deg);
+  }
+  #wedding-planner-app::after {
+    right: -56px;
+    transform: rotate(12deg) scaleX(-1);
+  }
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(20px, -18px, 0) scale(1.08); }
   }
   #wedding-planner-app {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    width: 100%;
+    width: min(100%, 1120px);
+    margin: 0 auto;
+    box-sizing: border-box;
+    position: relative;
+    padding-inline: 26px;
+  }
+  #wedding-planner-app .card {
+    border: 1px solid rgb(255 255 255 / 72%);
+    box-shadow: 0 12px 36px rgb(145 108 97 / 12%), 0 1px 0 rgb(255 255 255 / 70%) inset;
+    backdrop-filter: blur(8px);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    background-image: linear-gradient(135deg, rgb(255 255 255 / 82%) 0%, rgb(255 244 247 / 78%) 100%);
+  }
+  #wedding-planner-app .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgb(255 255 255 / 24%) 0%, rgb(255 255 255 / 0%) 40%, rgb(255 255 255 / 28%) 100%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+  #wedding-planner-app .card::after {
+    content: "✿";
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 0.95rem;
+    line-height: 1;
+    color: rgb(220 150 178 / 80%);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  #wedding-planner-app .card:nth-child(odd)::before {
+    background: linear-gradient(135deg, rgb(255 255 255 / 22%) 0%, rgb(255 232 241 / 18%) 60%, rgb(255 255 255 / 0%) 100%);
+  }
+  #wedding-planner-app .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgb(145 108 97 / 18%), 0 1px 0 rgb(255 255 255 / 80%) inset;
+    border-color: rgb(209 168 189 / 55%);
   }
   #wedding-planner-app .app-header,
   #wedding-planner-app .brand-block,
@@ -818,24 +922,82 @@ html>body{padding:0}</style>
   #wedding-planner-app .app-header {
     justify-content: space-between;
     gap: 12px;
+    flex-wrap: wrap;
+    background: linear-gradient(135deg, rgb(255 255 255 / 88%) 0%, rgb(255 240 248 / 92%) 100%);
+    border: 1px solid rgb(226 193 208 / 70%);
+    box-shadow: 0 16px 42px rgb(169 122 112 / 14%), 0 0 0 1px rgb(255 255 255 / 55%) inset;
   }
   #wedding-planner-app .brand-block { gap: 10px; }
   #wedding-planner-app .brand-mark {
     display: grid;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     place-items: center;
-    border-radius: 35%;
-    color: var(--accent-foreground);
-    background: var(--accent);
+    border-radius: 50% 45% 48% 52%;
+    color: rgb(132 88 106);
+    background: linear-gradient(135deg, var(--sun) 0%, var(--blush) 100%);
+    box-shadow: 0 6px 14px rgb(255 180 123 / 28%), inset 0 1px 0 rgb(255 255 255 / 70%);
   }
-  #wedding-planner-app .brand-name { font-weight: 500; }
+  #wedding-planner-app .brand-name {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-size: 1.14rem;
+    font-family: "Brush Script MT", "Segoe Script", "Lucida Handwriting", cursive;
+    color: rgb(153 99 117);
+  }
   #wedding-planner-app .passport-kicker {
     color: var(--accent-foreground);
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: .12em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
   }
-  #wedding-planner-app .header-actions { justify-content: flex-end; }
+  #wedding-planner-app .header-actions {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #wedding-planner-app .header-actions .btn,
+  #wedding-planner-app .btn {
+    border-color: rgb(204 176 155 / 40%);
+    background: linear-gradient(135deg, rgb(255 255 255) 0%, rgb(251 241 250) 100%);
+    color: var(--foreground);
+    transition: transform .18s ease, box-shadow .18s ease, background .2s ease;
+  }
+  #wedding-planner-app .btn:hover,
+  #wedding-planner-app .header-actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgb(171 122 104 / 16%);
+    background: linear-gradient(135deg, rgb(255 250 243) 0%, rgb(251 234 247) 100%);
+  }
+  #wedding-planner-app .btn:hover::before,
+  #wedding-planner-app .header-actions .btn:hover::before {
+    content: "✿";
+    margin-right: 6px;
+    font-size: 0.8rem;
+    color: rgb(201 118 151 / 85%);
+  }
+  #wedding-planner-app .btn::after,
+  #wedding-planner-app .header-actions .btn::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: inherit;
+    border: 1px solid rgb(255 255 255 / 45%);
+    pointer-events: none;
+  }
+  #wedding-planner-app .btn:focus-visible,
+  #wedding-planner-app .header-actions .btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(170 139 214 / 32%), 0 8px 16px rgb(171 122 104 / 16%);
+  }
+  #wedding-planner-app .btn-primary,
+  #wedding-planner-app .btn:is([data-action="save"], [data-action="export"], [data-action="import"])
+  {
+    border-color: transparent;
+    color: var(--primary-foreground);
+    background: linear-gradient(135deg, var(--sage) 0%, var(--lilac) 100%);
+  }
   #wedding-planner-app .app-shell {
     align-items: flex-start;
     gap: 12px;
@@ -844,9 +1006,14 @@ html>body{padding:0}</style>
     position: sticky;
     top: 5px;
     display: flex;
-    flex: 0 0 190px;
+    flex: 0 0 min(220px, 100%);
     flex-direction: column;
     gap: 14px;
+    max-width: 220px;
+    background: linear-gradient(180deg, rgb(255 255 255 / 82%) 0%, rgb(250 243 236 / 86%) 100%);
+    box-shadow: 0 10px 28px rgb(152 117 105 / 12%);
+    border-radius: 24px;
+    border: 1px solid rgb(225 199 208 / 70%);
   }
   #wedding-planner-app .nav-list,
   #wedding-planner-app .section-stack,
@@ -857,7 +1024,24 @@ html>body{padding:0}</style>
     flex-direction: column;
     gap: 8px;
   }
-  #wedding-planner-app .nav-list .btn { justify-content: flex-start; }
+  #wedding-planner-app .nav-list .btn {
+    justify-content: flex-start;
+    transition: transform .16s ease, background .2s ease, color .2s ease;
+  }
+  #wedding-planner-app .nav-list .btn:hover {
+    transform: translateX(2px);
+    background: linear-gradient(90deg, rgb(255 244 230) 0%, rgb(251 237 244) 100%);
+  }
+  #wedding-planner-app .nav-list .btn:hover::before {
+    content: "✿";
+    margin-right: 6px;
+    color: rgb(180 124 170 / 80%);
+  }
+  #wedding-planner-app .nav-list .btn[aria-pressed="true"],
+  #wedding-planner-app .nav-list .btn.is-selected {
+    background: linear-gradient(90deg, var(--sage-soft) 0%, rgb(255 232 238) 100%);
+    box-shadow: inset 0 0 0 1px rgb(170 139 214 / 28%);
+  }
   #wedding-planner-app .sidebar-foot { padding-top: 4px; }
   #wedding-planner-app .sidebar-passport {
     display: flex;
@@ -874,10 +1058,27 @@ html>body{padding:0}</style>
     flex: 1 1 auto;
   }
   #wedding-planner-app .section-stack { gap: 12px; }
+  #wedding-planner-app .viz-badge {
+    border: 1px solid rgb(255 211 130 / 50%);
+    background: linear-gradient(135deg, rgb(255 239 193) 0%, rgb(255 224 235) 100%);
+    color: rgb(132 88 106);
+    box-shadow: 0 5px 12px rgb(255 197 122 / 20%);
+  }
   #wedding-planner-app .section-head {
     justify-content: space-between;
     align-items: flex-end;
     gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgb(204 169 178 / 60%);
+    position: relative;
+  }
+  #wedding-planner-app .section-head::after {
+    content: "✿";
+    position: absolute;
+    right: 0;
+    bottom: -5px;
+    font-size: 0.95rem;
+    color: rgb(204 134 165 / 80%);
   }
   #wedding-planner-app .section-copy { max-width: 62ch; }
   #wedding-planner-app .section-copy p { margin-top: 4px; }
@@ -912,7 +1113,16 @@ html>body{padding:0}</style>
     gap: 8px;
     margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 1px dashed var(--border);
+    border-bottom: 1px dashed rgb(204 169 178 / 60%);
+    position: relative;
+  }
+  #wedding-planner-app .card-heading::after {
+    content: "❀";
+    position: absolute;
+    right: 0;
+    bottom: -7px;
+    font-size: 0.8rem;
+    color: rgb(200 140 145 / 75%);
   }
   #wedding-planner-app .progress-track {
     height: 8px;
@@ -923,7 +1133,8 @@ html>body{padding:0}</style>
   #wedding-planner-app .progress-fill {
     height: 100%;
     border-radius: inherit;
-    background: var(--primary);
+    background: linear-gradient(90deg, var(--sage) 0%, var(--blush) 45%, var(--sun) 100%);
+    box-shadow: inset 0 0 6px rgb(255 255 255 / 35%), 0 0 12px rgb(255 199 116 / 28%);
   }
   #wedding-planner-app .item-row,
   #wedding-planner-app .check-row,
@@ -934,6 +1145,16 @@ html>body{padding:0}</style>
     align-items: center;
     padding-block: 8px;
     border-bottom: 1px dashed var(--border);
+    transition: background .18s ease, transform .18s ease;
+  }
+  #wedding-planner-app .item-row:hover,
+  #wedding-planner-app .check-row:hover,
+  #wedding-planner-app .category-row:hover,
+  #wedding-planner-app .timeline-row:hover {
+    background: linear-gradient(90deg, rgb(255 248 242 / 72%) 0%, rgb(255 240 247 / 70%) 100%);
+    transform: translateX(2px);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgb(255 208 176 / 34%);
   }
   #wedding-planner-app .item-row:last-child,
   #wedding-planner-app .check-row:last-child,
@@ -1147,7 +1368,7 @@ html>body{padding:0}</style>
   #wedding-planner-app .seating-stage { min-width: 0; }
   #wedding-planner-app .seating-canvas-wrap {
     position: relative;
-    height: clamp(390px, 58vw, 590px);
+    height: clamp(320px, 42vw, 480px);
     min-width: 0;
     overflow: hidden;
     background: var(--muted);
