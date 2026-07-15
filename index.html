@@ -802,9 +802,6 @@ html>body{padding:0}</style>
     flex-direction: column;
     gap: 12px;
     width: 100%;
-    max-width: 1200px;
-    margin: 12px auto;
-    padding: 8px;
   }
   #wedding-planner-app .app-header,
   #wedding-planner-app .brand-block,
@@ -1003,7 +1000,7 @@ html>body{padding:0}</style>
   #wedding-planner-app .calendar-event-row:last-child { border-bottom: 0; }
   #wedding-planner-app .guest-row {
     display: grid;
-    grid-template-columns: minmax(150px, 1.4fr) minmax(135px, .8fr) minmax(125px, .8fr) auto;
+    grid-template-columns: minmax(170px, 1.1fr) minmax(360px, 2fr) auto;
     gap: 10px;
     align-items: center;
     padding-block: 9px;
@@ -1011,6 +1008,23 @@ html>body{padding:0}</style>
   }
   #wedding-planner-app .guest-row:last-child { border-bottom: 0; }
   #wedding-planner-app .guest-main { min-width: 0; }
+  #wedding-planner-app .guest-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(115px, 1fr));
+    gap: 8px;
+  }
+  #wedding-planner-app .guest-relation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-top: 5px;
+  }
+  #wedding-planner-app .guest-filter-bar {
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 10px;
+  }
   #wedding-planner-app .metric-number { font-variant-numeric: tabular-nums; }
   #wedding-planner-app .budget-visual {
     display: grid;
@@ -1205,8 +1219,9 @@ html>body{padding:0}</style>
     #wedding-planner-app .category-row .category-main,
     #wedding-planner-app .category-row .item-actions { grid-column: 1 / -1; }
     #wedding-planner-app .item-actions { justify-content: flex-start; }
-    #wedding-planner-app .guest-row { grid-template-columns: 1fr 1fr; }
+    #wedding-planner-app .guest-row { grid-template-columns: 1fr; }
     #wedding-planner-app .guest-row .guest-main,
+    #wedding-planner-app .guest-row .guest-status-grid,
     #wedding-planner-app .guest-row .item-actions { grid-column: 1 / -1; }
     #wedding-planner-app .calendar-grid { gap: 3px; }
     #wedding-planner-app .calendar-day,
@@ -1243,6 +1258,7 @@ html>body{padding:0}</style>
     #wedding-planner-app .timeline-row { grid-template-columns: 56px minmax(0, 1fr); }
     #wedding-planner-app .timeline-row .item-actions { grid-column: 1 / -1; }
     #wedding-planner-app .passport-details { grid-template-columns: 1fr; }
+    #wedding-planner-app .guest-status-grid { grid-template-columns: 1fr; }
   }
 </style>
 
@@ -1274,7 +1290,7 @@ html>body{padding:0}</style>
     view: { x: 0, y: 0, scale: 1, rotation: 0 }
   });
   const freshState = () => ({
-    version: 5,
+    version: 6,
     meta: { eventName: 'Meidän häät', weddingDate: '', websiteUrl: '' },
     totalBudget: 0,
     budgetCategories: [...defaultBudgetCategories],
@@ -1313,14 +1329,19 @@ html>body{padding:0}</style>
     return {
       ...base,
       ...raw,
-      version: 5,
+      version: 6,
       totalBudget: clearOldBudget ? 0 : Number.isFinite(storedTotalBudget) && storedTotalBudget >= 0 ? storedTotalBudget : inferredTotalBudget,
       meta: { ...base.meta, ...(raw.meta || {}) },
       ceremony: { ...base.ceremony, ...(raw.ceremony || {}) },
       reception: { ...base.reception, ...(raw.reception || {}) },
       checklist: Array.isArray(raw.checklist) ? raw.checklist : base.checklist,
       calendarEvents: Array.isArray(raw.calendarEvents) ? raw.calendarEvents : [],
-      guests: Array.isArray(raw.guests) ? raw.guests : [],
+      guests: Array.isArray(raw.guests) ? raw.guests.map(guest => ({
+        ...guest,
+        drinkPreference: guest.drinkPreference || 'Ei valintaa',
+        companionType: guest.companionType || 'Ei liitosta',
+        linkedGuestId: guest.linkedGuestId || ''
+      })) : [],
       timeline: Array.isArray(raw.timeline) ? raw.timeline : [],
       vendors: Array.isArray(raw.vendors) ? raw.vendors : [],
       tables: Array.isArray(raw.tables) ? raw.tables : base.tables,
@@ -1341,10 +1362,10 @@ html>body{padding:0}</style>
   try {
     const storedState = JSON.parse(localStorage.getItem(storageKey));
     state = normalizeState(storedState, true);
-    if (storedState && Number(storedState.version || 1) < 5) localStorage.setItem(storageKey, JSON.stringify(state));
+    if (storedState && Number(storedState.version || 1) < 6) localStorage.setItem(storageKey, JSON.stringify(state));
   }
   catch { state = freshState(); }
-  const ui = { section: 'dashboard', editBudget: null, editBudgetCategory: null, editBudgetPayment: null, editVendor: null, editTable: null, editSupply: null, editCalendarEvent: null, editGuest: null, calendarCursor: null, selectedCalendarDate: null };
+  const ui = { section: 'dashboard', editBudget: null, editBudgetCategory: null, editBudgetPayment: null, editVendor: null, editTable: null, editSupply: null, editCalendarEvent: null, editGuest: null, guestDrinkFilter: 'Kaikki', calendarCursor: null, selectedCalendarDate: null };
   let seatingCleanup = null;
 
   const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
@@ -1559,6 +1580,24 @@ html>body{padding:0}</style>
     const declined = state.guests.filter(item => item.rsvp === 'Ei tule').length;
     const invitationStatuses = ['Ei lähetetty','Lähetetty'];
     const rsvpStatuses = ['Odottaa vastausta','Tulossa','Ei tule'];
+    const drinkStatuses = ['Ei valintaa','Alkoholillinen','Alkoholiton'];
+    const companionTypes = ['Ei liitosta','Avec','Lapsi'];
+    const drinkFilters = ['Kaikki','Alkoholillinen','Alkoholiton'];
+    const activeDrinkFilter = drinkFilters.includes(ui.guestDrinkFilter) ? ui.guestDrinkFilter : 'Kaikki';
+    const sortedGuests = [...state.guests].sort((a,b) => a.name.localeCompare(b.name,'fi'));
+    const visibleGuests = activeDrinkFilter === 'Kaikki' ? sortedGuests : sortedGuests.filter(guest => (guest.drinkPreference || 'Ei valintaa') === activeDrinkFilter);
+    const drinkCount = status => state.guests.filter(guest => (guest.drinkPreference || 'Ei valintaa') === status).length;
+    const linkableGuests = sortedGuests.filter(guest => guest.id !== edit.id);
+    const relationText = guest => {
+      const relations = [];
+      const linkedGuest = state.guests.find(item => item.id === guest.linkedGuestId);
+      if (linkedGuest && guest.companionType === 'Avec') relations.push(`Avec: ${linkedGuest.name}`);
+      if (linkedGuest && guest.companionType === 'Lapsi') relations.push(`Lapsi · aikuinen: ${linkedGuest.name}`);
+      state.guests.filter(item => item.id !== guest.id && item.linkedGuestId === guest.id).forEach(item => {
+        relations.push(item.companionType === 'Lapsi' ? `Lapsi: ${item.name}` : `Avec: ${item.name}`);
+      });
+      return [...new Set(relations)];
+    };
     return `<div class="section-stack">
       ${sectionHead('Vieraslista', 'Lisää vieraat ja seuraa kutsujen lähettämistä sekä vastauksia.', `<button class="btn" type="button" data-guests-to-seating><i data-lucide="armchair" aria-hidden="true"></i>Vie tulossa olevat pöytäkarttaan</button>`)}
       <div class="viz-grid">
@@ -1574,13 +1613,17 @@ html>body{padding:0}</style>
           <label class="form-label">Yhteystieto<input class="form-control" name="contact" value="${esc(edit.contact)}" placeholder="Puhelin tai sähköposti"></label>
           <label class="form-label">Kutsu<select class="form-select" name="invitation">${options(invitationStatuses, edit.invitation || 'Ei lähetetty')}</select></label>
           <label class="form-label">Vastaus<select class="form-select" name="rsvp">${options(rsvpStatuses, edit.rsvp || 'Odottaa vastausta')}</select></label>
+          <label class="form-label">Juomavalinta<select class="form-select" name="drinkPreference">${options(drinkStatuses, edit.drinkPreference || 'Ei valintaa')}</select></label>
+          <label class="form-label">Avec / lapsi<select class="form-select" name="companionType">${options(companionTypes, edit.companionType || 'Ei liitosta')}</select></label>
+          <label class="form-label span-2">Liitetään vieraaseen<select class="form-select" name="linkedGuestId" ${(edit.companionType || 'Ei liitosta') === 'Ei liitosta' ? 'disabled' : ''}><option value="">Valitse vieras</option>${linkableGuests.map(guest => `<option value="${guest.id}" ${guest.id === edit.linkedGuestId ? 'selected' : ''}>${esc(guest.name)}</option>`).join('')}</select><span class="field-help text-small text-muted">Valitse, kenen avec tai lapsi tämä vieras on.</span></label>
           <label class="form-label span-2">Muistiinpano<input class="form-control" name="notes" value="${esc(edit.notes)}" placeholder="Ruokavalio, avec tai muu lisätieto"></label>
           <div class="form-actions">${edit.id ? '<button class="btn" type="button" data-cancel-edit="guest">Peruuta</button>' : ''}<button class="btn btn-primary" type="submit">${edit.id ? 'Tallenna muutokset' : 'Lisää vieras'}</button></div>
         </form>
       </section>
       <section class="card">
-        <div class="card-heading"><h3>Vieraat</h3><span class="text-small text-muted">${state.guests.length} nimeä</span></div>
-        ${state.guests.length ? [...state.guests].sort((a,b) => a.name.localeCompare(b.name,'fi')).map(guest => `<article class="guest-row"><div class="guest-main"><p class="item-title">${esc(guest.name)}</p><p class="text-small text-muted">${esc(guest.contact || 'Ei yhteystietoa')}${guest.notes ? ` · ${esc(guest.notes)}` : ''}</p></div><label class="form-label"><span class="sr-only">Kutsu: ${esc(guest.name)}</span><select class="form-select" data-guest-status="${guest.id}" data-guest-field="invitation" aria-label="Kutsu: ${esc(guest.name)}">${options(invitationStatuses, guest.invitation || 'Ei lähetetty')}</select></label><label class="form-label"><span class="sr-only">Vastaus: ${esc(guest.name)}</span><select class="form-select" data-guest-status="${guest.id}" data-guest-field="rsvp" aria-label="Vastaus: ${esc(guest.name)}">${options(rsvpStatuses, guest.rsvp || 'Odottaa vastausta')}</select></label><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-guest="${guest.id}"><i data-lucide="pencil" aria-hidden="true"></i><span class="sr-only">Muokkaa ${esc(guest.name)}</span></button><button class="btn btn-ghost" type="button" data-delete-guest="${guest.id}"><i data-lucide="trash-2" aria-hidden="true"></i><span class="sr-only">Poista ${esc(guest.name)}</span></button></div></article>`).join('') : empty('Lisää ensimmäinen vieras.')}
+        <div class="card-heading"><h3>Vieraat</h3><span class="text-small text-muted">${visibleGuests.length} / ${state.guests.length} nimeä</span></div>
+        <div class="viz-row guest-filter-bar"><div><p class="text-small text-muted">Juomavalinnan mukaan</p><div class="viz-row" role="group" aria-label="Suodata vieraat juomavalinnan mukaan">${drinkFilters.map(filter => `<button class="btn ${filter === activeDrinkFilter ? 'btn-primary' : 'btn-ghost'}" type="button" data-guest-drink-filter="${filter}" aria-pressed="${filter === activeDrinkFilter}">${filter} · ${filter === 'Kaikki' ? state.guests.length : drinkCount(filter)}</button>`).join('')}</div></div></div>
+        ${visibleGuests.length ? visibleGuests.map(guest => { const relations=relationText(guest); return `<article class="guest-row"><div class="guest-main"><p class="item-title">${esc(guest.name)}</p><p class="text-small text-muted">${esc(guest.contact || 'Ei yhteystietoa')}${guest.notes ? ` · ${esc(guest.notes)}` : ''}</p><div class="guest-relation"><span class="viz-badge">${esc(guest.drinkPreference || 'Ei valintaa')}</span>${relations.map(relation => `<span class="text-small">${esc(relation)}</span>`).join('')}</div></div><div class="guest-status-grid"><label class="form-label">Kutsu<select class="form-select" data-guest-status="${guest.id}" data-guest-field="invitation" aria-label="Kutsu: ${esc(guest.name)}">${options(invitationStatuses, guest.invitation || 'Ei lähetetty')}</select></label><label class="form-label">Vastaus<select class="form-select" data-guest-status="${guest.id}" data-guest-field="rsvp" aria-label="Vastaus: ${esc(guest.name)}">${options(rsvpStatuses, guest.rsvp || 'Odottaa vastausta')}</select></label><label class="form-label">Juoma<select class="form-select" data-guest-status="${guest.id}" data-guest-field="drinkPreference" aria-label="Juomavalinta: ${esc(guest.name)}">${options(drinkStatuses, guest.drinkPreference || 'Ei valintaa')}</select></label></div><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-guest="${guest.id}"><i data-lucide="pencil" aria-hidden="true"></i><span class="sr-only">Muokkaa ${esc(guest.name)}</span></button><button class="btn btn-ghost" type="button" data-delete-guest="${guest.id}"><i data-lucide="trash-2" aria-hidden="true"></i><span class="sr-only">Poista ${esc(guest.name)}</span></button></div></article>`; }).join('') : empty(state.guests.length ? 'Tässä juomasuodattimessa ei ole vieraita.' : 'Lisää ensimmäinen vieras.')}
       </section>
     </div>`;
   }
@@ -2072,6 +2115,11 @@ html>body{padding:0}</style>
       render();
       return;
     }
+    if (target.dataset.guestDrinkFilter !== undefined) {
+      ui.guestDrinkFilter = target.dataset.guestDrinkFilter;
+      render();
+      return;
+    }
     if (target.dataset.guestsToSeating !== undefined) {
       const names = state.guests.filter(guest => guest.rsvp === 'Tulossa').map(guest => guest.name.trim()).filter(Boolean);
       if (!names.length) {
@@ -2094,7 +2142,7 @@ html>body{padding:0}</style>
     }
     if (action === 'import') { fileInput.click(); return; }
     if (action === 'reset') {
-      if (confirm('Haluatko varmasti tyhjentää nykyiset tiedot ja palauttaa aloituspohjan? Vie ensin varmuuskopio, jos haluat säilyttää tiedot.')) mutate(() => { state = freshState(); Object.assign(ui,{section:'dashboard',editBudget:null,editBudgetCategory:null,editBudgetPayment:null,editVendor:null,editTable:null,editSupply:null,editCalendarEvent:null,editGuest:null,calendarCursor:null,selectedCalendarDate:null}); }, 'Aloituspohja palautettu');
+      if (confirm('Haluatko varmasti tyhjentää nykyiset tiedot ja palauttaa aloituspohjan? Vie ensin varmuuskopio, jos haluat säilyttää tiedot.')) mutate(() => { state = freshState(); Object.assign(ui,{section:'dashboard',editBudget:null,editBudgetCategory:null,editBudgetPayment:null,editVendor:null,editTable:null,editSupply:null,editCalendarEvent:null,editGuest:null,guestDrinkFilter:'Kaikki',calendarCursor:null,selectedCalendarDate:null}); }, 'Aloituspohja palautettu');
       return;
     }
     const cancel = target.dataset.cancelEdit;
@@ -2139,7 +2187,15 @@ html>body{padding:0}</style>
       }
       const targetItem = state[collection].find(item => item.id === id);
       const label = targetItem?.item || targetItem?.name || targetItem?.title || targetItem?.payer || 'kohde';
-      if (confirm(`Poistetaanko ${label}?`)) mutate(() => { state[collection] = state[collection].filter(item => item.id !== id); }, 'Poistettu');
+      if (confirm(`Poistetaanko ${label}?`)) mutate(() => {
+        state[collection] = state[collection].filter(item => item.id !== id);
+        if (collection === 'guests') state.guests.forEach(guest => {
+          if (guest.linkedGuestId === id) {
+            guest.linkedGuestId = '';
+            guest.companionType = 'Ei liitosta';
+          }
+        });
+      }, 'Poistettu');
       return;
     }
     if (target.dataset.deleteCheck) {
@@ -2166,6 +2222,14 @@ html>body{padding:0}</style>
   });
 
   root.addEventListener('change', event => {
+    if (event.target.matches('[name="companionType"]')) {
+      const linkedGuestSelect = event.target.form?.elements?.linkedGuestId;
+      if (linkedGuestSelect) {
+        const enabled = event.target.value !== 'Ei liitosta';
+        linkedGuestSelect.disabled = !enabled;
+        if (!enabled) linkedGuestSelect.value = '';
+      }
+    }
     if (event.target.matches('[data-check-id]')) {
       const item = state.checklist.find(i => i.id === event.target.dataset.checkId);
       if (item) mutate(() => { item.done = event.target.checked; }, event.target.checked ? 'Tehtävä valmis' : 'Tehtävä avattu');
@@ -2173,7 +2237,7 @@ html>body{padding:0}</style>
     if (event.target.matches('[data-guest-status]')) {
       const guest = state.guests.find(item => item.id === event.target.dataset.guestStatus);
       const field = event.target.dataset.guestField;
-      if (guest && ['invitation','rsvp'].includes(field)) mutate(() => { guest[field] = event.target.value; }, 'Vieraan tila päivitetty');
+      if (guest && ['invitation','rsvp','drinkPreference'].includes(field)) mutate(() => { guest[field] = event.target.value; }, 'Vieraan tila päivitetty');
     }
   });
 
@@ -2191,12 +2255,21 @@ html>body{padding:0}</style>
       ui.selectedCalendarDate = value.date;
       ui.calendarCursor = value.date.slice(0,7);
     }, data.id ? 'Kalenterimerkintä päivitetty' : 'Kalenterimerkintä lisätty');
-    if (kind === 'guest') mutate(() => {
-      const value = { id:data.id||uid(), name:data.name.trim(), contact:data.contact.trim(), invitation:data.invitation, rsvp:data.rsvp, notes:data.notes.trim() };
+    if (kind === 'guest') {
+      const companionType = data.companionType || 'Ei liitosta';
+      const linkedGuestId = companionType === 'Ei liitosta' ? '' : (data.linkedGuestId || '');
+      if (companionType !== 'Ei liitosta' && !linkedGuestId) {
+        const badge = root.querySelector('#save-status');
+        if (badge) badge.textContent = 'Valitse vieras, johon avec tai lapsi liitetään';
+        return;
+      }
+      mutate(() => {
+      const value = { id:data.id||uid(), name:data.name.trim(), contact:data.contact.trim(), invitation:data.invitation, rsvp:data.rsvp, drinkPreference:data.drinkPreference || 'Ei valintaa', companionType, linkedGuestId, notes:data.notes.trim() };
       const index = state.guests.findIndex(item => item.id === value.id);
       index >= 0 ? state.guests[index] = value : state.guests.push(value);
       ui.editGuest = null;
-    }, data.id ? 'Vieras päivitetty' : 'Vieras lisätty');
+      }, data.id ? 'Vieras päivitetty' : 'Vieras lisätty');
+    }
     if (kind === 'place') mutate(() => { state[form.dataset.scope] = { venue:data.venue.trim(), address:data.address.trim(), time:data.time, contact:data.contact.trim(), notes:data.notes.trim() }; }, 'Paikan tiedot tallennettu');
     if (kind === 'timeline') mutate(() => { state.timeline.push({ id:uid(), scope:form.dataset.scope, time:data.time, title:data.title.trim() }); }, 'Aikataulukohta lisätty');
     if (kind === 'vendor') mutate(() => { const value={ id:data.id||uid(), type:data.type.trim(), name:data.name.trim(), contact:data.contact.trim(), total:num(data.total), deposit:num(data.deposit), status:data.status, notes:data.notes.trim() }; const i=state.vendors.findIndex(x=>x.id===value.id); i>=0?state.vendors[i]=value:state.vendors.push(value); ui.editVendor=null; }, data.id ? 'Palveluntarjoaja päivitetty' : 'Palveluntarjoaja lisätty');
@@ -2258,7 +2331,7 @@ html>body{padding:0}</style>
       const parsed = JSON.parse(await file.text());
       if (!parsed || typeof parsed !== 'object') throw new Error('Virheellinen tiedosto');
       if (Array.isArray(parsed.budget)) {
-        state = normalizeState(parsed); Object.assign(ui,{section:'dashboard',editBudget:null,editBudgetCategory:null,editBudgetPayment:null,editVendor:null,editTable:null,editSupply:null,editCalendarEvent:null,editGuest:null,calendarCursor:null,selectedCalendarDate:null});
+        state = normalizeState(parsed); Object.assign(ui,{section:'dashboard',editBudget:null,editBudgetCategory:null,editBudgetPayment:null,editVendor:null,editTable:null,editSupply:null,editCalendarEvent:null,editGuest:null,guestDrinkFilter:'Kaikki',calendarCursor:null,selectedCalendarDate:null});
       } else if (Array.isArray(parsed.items)) {
         const fresh = freshSeatingPlan();
         state.seatingPlan = { ...fresh, ...parsed, items:parsed.items, view:{ ...fresh.view, ...(parsed.view || {}) } };
