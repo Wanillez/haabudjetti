@@ -1200,15 +1200,30 @@ html>body{padding:0}</style>
   #wedding-planner-app .calendar-day-number { font-weight: 500; }
   #wedding-planner-app .calendar-markers {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 3px;
-    min-height: 9px;
+    gap: 4px;
+    min-height: 20px;
   }
   #wedding-planner-app .calendar-marker {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--dusty-pink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgb(255 200 197 / 90%) 0%, rgb(255 239 198 / 90%) 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 72%), 0 2px 6px rgb(0 0 0 / 10%);
+    font-size: 0.84rem;
+    line-height: 1;
+  }
+  #wedding-planner-app .calendar-marker-more {
+    width: auto;
+    min-width: 18px;
+    padding: 0 6px;
+    color: var(--foreground);
+    font-size: 0.75rem;
+    font-weight: 600;
   }
   #wedding-planner-app .calendar-event-row {
     display: grid;
@@ -1750,7 +1765,10 @@ html>body{padding:0}</style>
   function renderCalendar() {
     const fallbackDate = state.meta.weddingDate || todayIso();
     const cursor = ui.calendarCursor || fallbackDate.slice(0,7);
-    const selectedDate = ui.selectedCalendarDate || fallbackDate;
+    const monthEvents = [...state.calendarEvents]
+      .filter(item => item.date?.startsWith(cursor))
+      .sort((a,b) => (a.date || '').localeCompare(b.date || '') || (a.time || '99:99').localeCompare(b.time || '99:99') || a.title.localeCompare(b.title));
+    const selectedDate = ui.selectedCalendarDate || monthEvents[0]?.date || fallbackDate;
     const [year,month] = cursor.split('-').map(Number);
     const daysInMonth = new Date(year, month, 0).getDate();
     const firstWeekday = (new Date(year, month-1, 1).getDay() + 6) % 7;
@@ -1759,9 +1777,9 @@ html>body{padding:0}</style>
     const edit = state.calendarEvents.find(item => item.id === ui.editCalendarEvent) || {};
     const formDate = edit.date || selectedDate;
     const selectedEvents = state.calendarEvents.filter(item => item.date === selectedDate).sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99') || a.title.localeCompare(b.title));
-    const monthEvents = state.calendarEvents.filter(item => item.date?.startsWith(cursor));
     const eventCategories = ['Tapaaminen','Määräpäivä','Maksu','Varaus','Hääpäivä','Muu'];
     const weekdays = ['Ma','Ti','Ke','To','Pe','La','Su'];
+    const categoryIcon = category => ({ Tapaaminen:'✿', Määräpäivä:'📅', Maksu:'💶', Varaus:'🪑', 'Hääpäivä':'💒', Muu:'✨' }[category] || '✦');
     return `<div class="section-stack">
       ${sectionHead('Kalenteri', 'Merkitse tapaamiset, määräpäivät, maksut ja muut hääjärjestelyt samaan kalenteriin.', `<span class="viz-badge">${monthEvents.length} merkintää kuussa</span>`)}
       <div class="content-split">
@@ -1771,7 +1789,9 @@ html>body{padding:0}</style>
             if (!date) return '<span class="calendar-spacer" aria-hidden="true"></span>';
             const events = state.calendarEvents.filter(item => item.date === date);
             const accessibleEvents = events.length ? `, ${events.length} merkintää: ${events.map(item => item.title).join(', ')}` : ', ei merkintöjä';
-            return `<button class="btn calendar-day" type="button" data-calendar-date="${date}" aria-pressed="${date === selectedDate}" aria-label="${esc(dateLabel(date) + accessibleEvents)}"><span class="calendar-day-number">${Number(date.slice(-2))}</span><span class="calendar-markers" aria-hidden="true">${events.slice(0,3).map(() => '<span class="calendar-marker"></span>').join('')}${events.length > 3 ? `<span class="text-small">+${events.length-3}</span>` : ''}</span></button>`;
+            const visibleMarkers = events.slice(0,2).map(event => `<span class="calendar-marker" title="${esc(event.title)}" aria-label="${esc(event.title)}">${categoryIcon(event.category)}</span>`).join('');
+            const overflow = events.length > 2 ? `<span class="calendar-marker calendar-marker-more" title="${events.length - 2} lisää">+${events.length - 2}</span>` : '';
+            return `<button class="btn calendar-day" type="button" data-calendar-date="${date}" aria-pressed="${date === selectedDate}" aria-label="${esc(dateLabel(date) + accessibleEvents)}"><span class="calendar-day-number">${Number(date.slice(-2))}</span><span class="calendar-markers" aria-hidden="true">${visibleMarkers}${overflow}</span></button>`;
           }).join('')}</div>
         </section>
         <section class="card">
@@ -1787,6 +1807,10 @@ html>body{padding:0}</style>
           </form>
         </section>
       </div>
+      <section class="card">
+        <div class="card-heading"><h3>Kuukauden merkinnät</h3><span class="text-small text-muted">${monthEvents.length} merkintää</span></div>
+        ${monthEvents.length ? monthEvents.map(item => `<article class="calendar-event-row"><span class="metric-number">${esc(dateLabel(item.date))}</span><div><p class="item-title">${esc(item.title)}</p><p class="text-small text-muted">${esc(item.category)}${item.time ? ` · ${esc(item.time)}` : ''}${item.notes ? ` · ${esc(item.notes)}` : ''}</p></div><div class="item-actions"><button class="btn btn-ghost" type="button" data-calendar-date="${item.date}">Näytä päivä</button><button class="btn btn-ghost" type="button" data-edit-calendar-event="${item.id}"><i data-lucide="pencil" aria-hidden="true"></i>Muokkaa</button><button class="btn btn-ghost" type="button" data-delete-calendar-event="${item.id}"><i data-lucide="trash-2" aria-hidden="true"></i>Poista</button></div></article>`).join('') : empty('Tälle kuukaudelle ei ole merkintöjä.')}
+      </section>
       <section class="card">
         <div class="card-heading"><h3>${esc(dateLabel(selectedDate))}</h3><span class="text-small text-muted">${selectedEvents.length} merkintää</span></div>
         ${selectedEvents.length ? selectedEvents.map(item => `<article class="calendar-event-row"><span class="metric-number">${esc(item.time || 'Koko päivä')}</span><div><p class="item-title">${esc(item.title)}</p><p class="text-small text-muted">${esc(item.category)}${item.notes ? ` · ${esc(item.notes)}` : ''}</p></div><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-calendar-event="${item.id}"><i data-lucide="pencil" aria-hidden="true"></i>Muokkaa</button><button class="btn btn-ghost" type="button" data-delete-calendar-event="${item.id}"><i data-lucide="trash-2" aria-hidden="true"></i>Poista</button></div></article>`).join('') : empty('Tälle päivälle ei ole vielä merkintöjä.')}
@@ -2081,7 +2105,11 @@ html>body{padding:0}</style>
           <label class="form-label">Maksupäivä<input class="form-control" name="date" type="date" value="${esc(editPayment.date || todayIso())}"></label>
           <label class="form-label span-2">Muistiinpano<input class="form-control" name="notes" value="${esc(editPayment.notes)}" placeholder="Esim. ensimmäinen maksuerä"></label>
           ${state.budget.length ? '' : '<p class="field-help text-small status-warning span-2">Lisää ensin vähintään yksi budjetin alakategoria.</p>'}
-          <div class="form-actions">${editPayment.id ? '<button class="btn" type="button" data-cancel-edit="budgetPayment">Peruuta</button>' : ''}<button class="btn btn-primary" type="submit" ${state.budget.length ? '' : 'disabled'}>${editPayment.id ? 'Tallenna osuus' : 'Lisää maksuosuus'}</button></div>
+          <div class="form-actions">
+            ${editPayment.id ? '<button class="btn" type="button" data-cancel-edit="budgetPayment">Peruuta</button>' : ''}
+            ${editPayment.id ? `<button class="btn btn-ghost" type="button" data-delete-budget-payment="${editPayment.id}">Poista maksuerittely</button>` : ''}
+            <button class="btn btn-primary" type="submit" ${state.budget.length ? '' : 'disabled'}>${editPayment.id ? 'Tallenna osuus' : 'Lisää maksuosuus'}</button>
+          </div>
         </form>
       </section>
       <div class="content-split">
@@ -2091,7 +2119,7 @@ html>body{padding:0}</style>
         </section>
         <section class="card">
           <div class="card-heading"><h3>Maksuerittelyt</h3><span class="text-small text-muted">${paymentEntries.length} merkintää</span></div>
-          ${paymentEntries.length ? [...paymentEntries].sort((a,b) => (b.date || '').localeCompare(a.date || '')).map(payment => `<article class="item-row"><div class="item-main"><i data-lucide="receipt-text" aria-hidden="true"></i><div><p class="item-title">${esc(payment.payer)}</p><p class="text-small text-muted">${esc(payment.expense.category)} · ${esc(payment.expense.item)}${payment.notes ? ` · ${esc(payment.notes)}` : ''}</p></div></div><span><span class="text-small text-muted">Osuus</span><br><span class="metric-number">${money(payment.amount)}</span></span><span><span class="text-small text-muted">Päivä</span><br>${payment.date ? dateLabel(payment.date) : 'Ei päivää'}</span><span class="viz-badge">${payerRole(payment.payer)}</span><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-budget-payment="${payment.id}"><i data-lucide="pencil" aria-hidden="true"></i><span class="sr-only">Muokkaa ${esc(payment.payer)} maksuosuutta</span></button><button class="btn btn-ghost" type="button" data-delete-budget-payment="${payment.id}"><i data-lucide="trash-2" aria-hidden="true"></i><span class="sr-only">Poista ${esc(payment.payer)} maksuosuus</span></button></div></article>`).join('') : empty('Maksuosuuksia ei ole vielä eritelty.')}
+          ${paymentEntries.length ? [...paymentEntries].sort((a,b) => (b.date || '').localeCompare(a.date || '')).map(payment => `<article class="item-row"><div class="item-main"><i data-lucide="receipt-text" aria-hidden="true"></i><div><p class="item-title">${esc(payment.payer)}</p><p class="text-small text-muted">${esc(payment.expense.category)} · ${esc(payment.expense.item)}${payment.notes ? ` · ${esc(payment.notes)}` : ''}</p></div></div><span><span class="text-small text-muted">Osuus</span><br><span class="metric-number">${money(payment.amount)}</span></span><span><span class="text-small text-muted">Päivä</span><br>${payment.date ? dateLabel(payment.date) : 'Ei päivää'}</span><span class="viz-badge">${payerRole(payment.payer)}</span><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-budget-payment="${payment.id}" aria-label="Muokkaa ${esc(payment.payer)} maksuosuutta"><i data-lucide="pencil" aria-hidden="true"></i><span class="sr-only">Muokkaa ${esc(payment.payer)} maksuosuutta</span></button><button class="btn btn-ghost" type="button" data-delete-budget-payment="${payment.id}" aria-label="Poista ${esc(payment.payer)} maksuosuus"><i data-lucide="trash-2" aria-hidden="true"></i><span class="sr-only">Poista ${esc(payment.payer)} maksuosuus</span></button></div></article>`).join('') : empty('Maksuosuuksia ei ole vielä eritelty.')}
         </section>
       </div>
     </div>`;
@@ -2308,6 +2336,31 @@ html>body{padding:0}</style>
   root.addEventListener('click', event => {
     const target = event.target.closest('button');
     if (!target) return;
+    const deleteBudgetPaymentButton = target.closest('[data-delete-budget-payment]');
+    if (deleteBudgetPaymentButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      const id = deleteBudgetPaymentButton.dataset.deleteBudgetPayment;
+      const payment = state.budgetPayments.find(item => item.id === id);
+      if (confirm(`Poistetaanko ${payment?.payer || 'maksuerittely'}?`)) mutate(() => {
+        state.budgetPayments = state.budgetPayments.filter(item => item.id !== id);
+        if (ui.editBudgetPayment === id) ui.editBudgetPayment = null;
+        if (payment?.budgetId) {
+          const expense = state.budget.find(item => item.id === payment.budgetId);
+          if (expense) {
+            const remainingPayments = state.budgetPayments.filter(item => item.budgetId === payment.budgetId).reduce((sum,item) => sum + num(item.amount), 0);
+            expense.paid = Math.max(num(expense.paid), remainingPayments);
+            expense.actual = Math.max(num(expense.actual), remainingPayments);
+          }
+        }
+      }, 'Maksuerittely poistettu');
+      return;
+    }
+    if (target.type === 'submit' && target.form) {
+      event.preventDefault();
+      if (target.form.reportValidity()) handleForm(target.form);
+      return;
+    }
     if (target.type === 'submit' && target.form) {
       event.preventDefault();
       if (target.form.reportValidity()) handleForm(target.form);
@@ -2390,6 +2443,12 @@ html>body{padding:0}</style>
       }, 'Pääkategoria ja sen alakategoriat poistettu');
       return;
     }
+    const editBudgetPaymentId = target.dataset.editBudgetPayment || target.dataset.editBudgetPayment?.trim?.() || target.closest('[data-edit-budget-payment]')?.dataset.editBudgetPayment;
+    if (editBudgetPaymentId) {
+      ui.editBudgetPayment = editBudgetPaymentId;
+      render();
+      return;
+    }
     const map = [
       ['editBudget','budget'],['editVendor','vendors'],['deleteVendor','vendors'],
       ['editTable','tables'],['deleteTable','tables'],['editSupply','supplies'],['deleteSupply','supplies'],
@@ -2397,7 +2456,7 @@ html>body{padding:0}</style>
       ['editBudgetPayment','budgetPayments'],['deleteBudgetPayment','budgetPayments']
     ];
     for (const [key, collection] of map) {
-      const id = target.dataset[key]; if (!id) continue;
+      const id = target.dataset[key] || target.dataset[key.replace(/[A-Z]/g, c => `-${c.toLowerCase()}`)] || target.closest(`[data-${key.replace(/[A-Z]/g, c => `-${c.toLowerCase()}`)}]`)?.dataset[key.replace(/[A-Z]/g, c => `-${c.toLowerCase()}`)]; if (!id) continue;
       if (key.startsWith('edit')) {
         ui[key] = id;
         if (key === 'editCalendarEvent') {
