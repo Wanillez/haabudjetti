@@ -1,0 +1,2434 @@
+<div id="wedding-planner-app">
+  <header class="card app-header">
+    <div class="brand-block">
+      <span class="brand-mark" aria-hidden="true"><i data-lucide="flower-2"></i></span>
+      <div>
+        <p class="passport-kicker text-small">PASSPORT TO OUR WEDDING</p>
+        <p class="brand-name">Tahdon.</p>
+        <p class="text-small text-muted" id="event-subtitle">Our Wedding</p>
+      </div>
+    </div>
+    <span class="wildflower-sprig" aria-hidden="true"><i data-lucide="flower-2"></i><i data-lucide="leaf"></i><i data-lucide="flower"></i><i data-lucide="sprout"></i></span>
+    <div class="viz-row header-actions">
+      <span class="viz-badge" id="save-status" role="status" aria-live="polite">Saved</span>
+      <button class="btn btn-primary" type="button" data-action="save"><i data-lucide="save" aria-hidden="true"></i>Save</button>
+      <button class="btn" type="button" data-action="export"><i data-lucide="download" aria-hidden="true"></i>Download backup</button>
+      <button class="btn" type="button" data-action="import"><i data-lucide="upload" aria-hidden="true"></i>Import backup</button>
+      <input class="sr-only" id="import-file" type="file" accept="application/json,.json">
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="card app-sidebar" aria-label="Main navigation">
+      <nav class="nav-list" id="main-nav"></nav>
+      <div class="sidebar-foot">
+        <div class="sidebar-passport text-small"><i data-lucide="flower-2" aria-hidden="true"></i>WILDFLOWER · FIN</div>
+        <button class="btn btn-ghost btn-block" type="button" data-action="reset"><i data-lucide="rotate-ccw" aria-hidden="true"></i>Start over</button>
+      </div>
+    </aside>
+    <main class="app-main" id="app-content"></main>
+  </div>
+</div>
+
+<style>
+  :root {
+    color-scheme: light;
+    --sage: rgb(126 156 130);
+    --sage-soft: rgb(227 239 226);
+    --dusty-pink: rgb(204 141 158);
+    --dusty-pink-soft: rgb(248 226 233);
+    --background: rgb(251 248 245);
+    --foreground: rgb(67 71 64);
+    --card: rgb(255 255 255 / 88%);
+    --card-foreground: var(--foreground);
+    --primary: var(--dusty-pink);
+    --primary-foreground: rgb(255 255 255);
+    --secondary: var(--sage-soft);
+    --secondary-foreground: var(--foreground);
+    --muted: rgb(242 237 232);
+    --muted-foreground: rgb(104 112 102);
+    --accent: var(--sage-soft);
+    --accent-foreground: rgb(67 91 71);
+    --border: rgb(217 220 211);
+    --input: rgb(239 232 231);
+    --ring: var(--dusty-pink);
+    --viz-series-1: var(--dusty-pink);
+    --viz-series-2: var(--sage);
+    --viz-series-3: rgb(169 151 207);
+    --viz-series-4: rgb(222 184 100);
+    --viz-series-5: rgb(112 165 192);
+    --viz-series-6: rgb(220 143 130);
+  }
+  #wedding-planner-app {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    padding: 4px;
+    background:
+      radial-gradient(circle at 7% 3%, color-mix(in srgb, var(--dusty-pink) 18%, transparent), transparent 25%),
+      radial-gradient(circle at 94% 18%, color-mix(in srgb, var(--sage) 20%, transparent), transparent 31%),
+      radial-gradient(circle at 54% 62%, color-mix(in srgb, var(--viz-series-3) 8%, transparent), transparent 36%);
+  }
+  #wedding-planner-app .app-header,
+  #wedding-planner-app .brand-block,
+  #wedding-planner-app .app-shell,
+  #wedding-planner-app .section-head,
+  #wedding-planner-app .item-main,
+  #wedding-planner-app .item-actions,
+  #wedding-planner-app .legend-row,
+  #wedding-planner-app .check-main,
+  #wedding-planner-app .website-link {
+    display: flex;
+    align-items: center;
+  }
+  #wedding-planner-app .app-header {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: linear-gradient(110deg, color-mix(in srgb, var(--dusty-pink-soft) 76%, var(--card)), color-mix(in srgb, var(--sage-soft) 70%, var(--card)) 58%, color-mix(in srgb, var(--viz-series-3) 15%, var(--card)));
+  }
+  #wedding-planner-app .brand-block { gap: 10px; }
+  #wedding-planner-app .brand-mark {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 35%;
+    color: var(--primary-foreground);
+    background: linear-gradient(135deg, var(--primary), var(--sage));
+  }
+  #wedding-planner-app .brand-name { font-weight: 500; }
+  #wedding-planner-app .passport-kicker {
+    color: var(--accent-foreground);
+    font-weight: 500;
+    letter-spacing: .12em;
+  }
+  #wedding-planner-app .header-actions { justify-content: flex-end; }
+  #wedding-planner-app .wildflower-sprig {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    color: var(--sage);
+  }
+  #wedding-planner-app .wildflower-sprig svg {
+    transition: color .2s ease, transform .2s ease;
+  }
+  #wedding-planner-app .wildflower-sprig svg:nth-child(1) { color: var(--dusty-pink); transform: rotate(-9deg); }
+  #wedding-planner-app .wildflower-sprig svg:nth-child(2) { color: var(--sage); }
+  #wedding-planner-app .wildflower-sprig svg:nth-child(3) { color: var(--viz-series-3); transform: rotate(8deg); }
+  #wedding-planner-app .wildflower-sprig svg:nth-child(4) { color: var(--viz-series-4); }
+  #wedding-planner-app .app-header:hover .wildflower-sprig svg:nth-child(1) { transform: translateY(-2px) rotate(-14deg); }
+  #wedding-planner-app .app-header:hover .wildflower-sprig svg:nth-child(3) { transform: translateY(-3px) rotate(13deg); }
+  #wedding-planner-app .app-shell {
+    align-items: flex-start;
+    gap: 16px;
+  }
+  #wedding-planner-app .app-sidebar {
+    position: sticky;
+    top: 5px;
+    display: flex;
+    flex: 0 0 210px;
+    flex-direction: column;
+    gap: 14px;
+    background: linear-gradient(165deg, color-mix(in srgb, var(--sage-soft) 92%, var(--card)), color-mix(in srgb, var(--dusty-pink-soft) 56%, var(--card)));
+  }
+  #wedding-planner-app .nav-list,
+  #wedding-planner-app .section-stack,
+  #wedding-planner-app .list-stack,
+  #wedding-planner-app .category-list,
+  #wedding-planner-app .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #wedding-planner-app .nav-list .btn {
+    position: relative;
+    justify-content: flex-start;
+    transition: background-color .18s ease, color .18s ease, transform .18s ease;
+  }
+  #wedding-planner-app .nav-list .btn:hover { transform: translateX(2px); }
+  #wedding-planner-app .nav-list .btn[aria-pressed="true"] {
+    color: var(--primary-foreground);
+    background: linear-gradient(100deg, var(--dusty-pink), color-mix(in srgb, var(--sage) 62%, var(--dusty-pink)));
+  }
+  #wedding-planner-app .nav-list .btn .viz-badge { margin-left: auto; }
+  #wedding-planner-app .nav-list .btn[aria-pressed="true"]::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-left: auto;
+    border-radius: 50%;
+    background: var(--dusty-pink);
+  }
+  #wedding-planner-app .sidebar-foot { padding-top: 4px; }
+  #wedding-planner-app .sidebar-passport {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    color: var(--muted-foreground);
+    letter-spacing: .08em;
+  }
+  #wedding-planner-app .app-main {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  #wedding-planner-app .section-stack { gap: 12px; }
+  #wedding-planner-app .section-head {
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  #wedding-planner-app .section-copy { max-width: 62ch; }
+  #wedding-planner-app .section-copy p { margin-top: 4px; }
+  #wedding-planner-app .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  #wedding-planner-app .form-grid .span-2 { grid-column: 1 / -1; }
+  #wedding-planner-app .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    grid-column: 1 / -1;
+  }
+  #wedding-planner-app .content-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(250px, .85fr);
+    gap: 12px;
+  }
+  #wedding-planner-app .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  #wedding-planner-app .dashboard-grid .wide { grid-column: 1 / -1; }
+  #wedding-planner-app .card-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .progress-track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--muted);
+  }
+  #wedding-planner-app .progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--dusty-pink));
+    transition: width .28s ease;
+  }
+  #wedding-planner-app .item-row,
+  #wedding-planner-app .check-row,
+  #wedding-planner-app .category-row,
+  #wedding-planner-app .timeline-row {
+    display: grid;
+    gap: 10px;
+    align-items: center;
+    padding-block: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .item-row:last-child,
+  #wedding-planner-app .check-row:last-child,
+  #wedding-planner-app .category-row:last-child,
+  #wedding-planner-app .timeline-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .item-row,
+  #wedding-planner-app .check-row,
+  #wedding-planner-app .guest-row,
+  #wedding-planner-app .calendar-event-row {
+    transition: background-color .18s ease, transform .18s ease;
+  }
+  #wedding-planner-app .viz-stat,
+  #wedding-planner-app .level-card,
+  #wedding-planner-app .calendar-day,
+  #wedding-planner-app .calendar-entry-indicator,
+  #wedding-planner-app .achievement-icon,
+  #wedding-planner-app .reward-icon {
+    transition: background-color .18s ease, transform .18s ease;
+  }
+  #wedding-planner-app .viz-stat:hover,
+  #wedding-planner-app .level-card:hover,
+  #wedding-planner-app .calendar-day:hover { transform: translateY(-2px); }
+  #wedding-planner-app .achievement-row:hover .achievement-icon,
+  #wedding-planner-app .reward-row:hover .reward-icon { transform: rotate(-5deg) scale(1.05); }
+  #wedding-planner-app .calendar-day:hover .calendar-entry-indicator { transform: rotate(3deg) scale(1.04); }
+  #wedding-planner-app .item-row:hover,
+  #wedding-planner-app .check-row:hover,
+  #wedding-planner-app .guest-row:hover,
+  #wedding-planner-app .calendar-event-row:hover {
+    background: color-mix(in srgb, var(--accent) 34%, transparent);
+  }
+  #wedding-planner-app .item-row { grid-template-columns: minmax(150px, 1.5fr) repeat(3, minmax(80px, .7fr)) auto; }
+  #wedding-planner-app .check-row { grid-template-columns: minmax(0, 1fr) auto auto; }
+  #wedding-planner-app .category-row { grid-template-columns: minmax(110px, 1.2fr) repeat(3, minmax(76px, .65fr)) auto; }
+  #wedding-planner-app .timeline-row { grid-template-columns: 70px minmax(0, 1fr) auto; }
+  #wedding-planner-app .item-main,
+  #wedding-planner-app .check-main { min-width: 0; gap: 8px; }
+  #wedding-planner-app .item-main > div,
+  #wedding-planner-app .check-main > div { min-width: 0; }
+  #wedding-planner-app .item-title { overflow-wrap: anywhere; }
+  #wedding-planner-app .item-actions { justify-content: flex-end; gap: 4px; }
+  #wedding-planner-app .item-actions .btn { padding-inline: 8px; }
+  #wedding-planner-app .budget-category-tree { display: grid; gap: 18px; }
+  #wedding-planner-app .budget-category-manager { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  #wedding-planner-app .budget-category-group + .budget-category-group { padding-top: 14px; border-top: 1px solid var(--border); }
+  #wedding-planner-app .budget-category-header { border-bottom: 1px solid var(--border); }
+  #wedding-planner-app .budget-subcategory-list { display: grid; margin-left: 8px; padding-left: 18px; border-left: 2px solid var(--border); }
+  #wedding-planner-app .budget-category-empty { margin: 0; padding: 10px 0 2px; }
+  #wedding-planner-app .budget-subcategory-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .calendar-toolbar { justify-content: space-between; }
+  #wedding-planner-app .calendar-month-card {
+    background: linear-gradient(145deg, color-mix(in srgb, var(--viz-series-3) 8%, var(--card)), color-mix(in srgb, var(--viz-series-5) 7%, var(--card)));
+  }
+  #wedding-planner-app .calendar-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr);
+    gap: 12px;
+  }
+  #wedding-planner-app .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+  }
+  #wedding-planner-app .calendar-weekday {
+    padding-block: 4px;
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+  #wedding-planner-app .calendar-spacer {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+  }
+  #wedding-planner-app .calendar-day {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 7px;
+    padding: 9px;
+    overflow: hidden;
+  }
+  #wedding-planner-app .calendar-day-number {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 50%;
+    font-weight: 500;
+  }
+  #wedding-planner-app .calendar-day-top {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+  }
+  #wedding-planner-app .calendar-entry-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 6px;
+    border-radius: 999px;
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--event-color) 28%, var(--card));
+  }
+  #wedding-planner-app .calendar-day.is-today .calendar-day-number {
+    color: var(--primary-foreground);
+    background: var(--primary);
+  }
+  #wedding-planner-app .calendar-day-events {
+    display: grid;
+    width: 100%;
+    gap: 4px;
+  }
+  #wedding-planner-app .calendar-event-chip {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 3px 6px;
+    overflow: hidden;
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--event-color) 20%, transparent);
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #wedding-planner-app [data-event-series="1"] { --event-color: var(--viz-series-1); }
+  #wedding-planner-app [data-event-series="2"] { --event-color: var(--viz-series-2); }
+  #wedding-planner-app [data-event-series="3"] { --event-color: var(--viz-series-3); }
+  #wedding-planner-app [data-event-series="4"] { --event-color: var(--viz-series-4); }
+  #wedding-planner-app [data-event-series="5"] { --event-color: var(--viz-series-5); }
+  #wedding-planner-app [data-event-series="6"] { --event-color: var(--viz-series-6); }
+  #wedding-planner-app .calendar-event-row {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 8px 8px 10px;
+    border-left: 3px solid var(--event-color, var(--border));
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .calendar-event-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .guest-row {
+    display: grid;
+    grid-template-columns: minmax(170px, 1.1fr) minmax(360px, 2fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding-block: 9px;
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .guest-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .guest-main { min-width: 0; }
+  #wedding-planner-app .guest-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(115px, 1fr));
+    gap: 8px;
+  }
+  #wedding-planner-app .guest-relation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-top: 5px;
+  }
+  #wedding-planner-app .guest-filter-bar {
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 10px;
+  }
+  #wedding-planner-app .metric-number { font-variant-numeric: tabular-nums; }
+  #wedding-planner-app .viz-stat {
+    position: relative;
+    overflow: hidden;
+    --stat-accent: var(--viz-series-1);
+  }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(2) { --stat-accent: var(--viz-series-2); }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(3) { --stat-accent: var(--viz-series-3); }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(4) { --stat-accent: var(--viz-series-4); }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(5) { --stat-accent: var(--viz-series-5); }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(6) { --stat-accent: var(--viz-series-6); }
+  #wedding-planner-app .viz-stat::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--stat-accent), color-mix(in srgb, var(--stat-accent) 28%, transparent));
+  }
+  #wedding-planner-app .budget-visual {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+  }
+  #wedding-planner-app .donut-wrap { max-width: 150px; }
+  #wedding-planner-app .donut { display: block; width: 100%; height: auto; }
+  #wedding-planner-app .donut text { fill: var(--foreground); font: 500 8px var(--font-sans); }
+  #wedding-planner-app .legend-row { justify-content: space-between; gap: 8px; }
+  #wedding-planner-app .legend-label { display: flex; align-items: center; gap: 7px; min-width: 0; }
+  #wedding-planner-app .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+  #wedding-planner-app .website-link { gap: 8px; overflow-wrap: anywhere; }
+  #wedding-planner-app .empty-state { padding-block: 14px; text-align: center; }
+  #wedding-planner-app .completed .item-title { text-decoration: line-through; color: var(--muted-foreground); }
+  #wedding-planner-app .field-help { margin-top: 4px; }
+  #wedding-planner-app .status-warning { color: var(--destructive); }
+  #wedding-planner-app .sr-chart-summary { margin-top: 8px; }
+  #wedding-planner-app [hidden] { display: none !important; }
+  #wedding-planner-app .passport-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(180px, .65fr);
+    gap: 18px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--dusty-pink) 34%, transparent), transparent 29%),
+      linear-gradient(135deg, color-mix(in srgb, var(--sage-soft) 84%, var(--card)), color-mix(in srgb, var(--dusty-pink-soft) 55%, var(--card)));
+  }
+  #wedding-planner-app .passport-hero::after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    bottom: -95px;
+    width: 220px;
+    height: 220px;
+    border: 28px solid color-mix(in srgb, var(--foreground) 6%, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  #wedding-planner-app .passport-main,
+  #wedding-planner-app .passport-side { position: relative; z-index: 1; min-width: 0; }
+  #wedding-planner-app .passport-title-row,
+  #wedding-planner-app .route-line {
+    display: flex;
+    align-items: center;
+  }
+  #wedding-planner-app .passport-title-row {
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  #wedding-planner-app .passport-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+    padding-block: 10px;
+    border-block: 1px dashed var(--border);
+  }
+  #wedding-planner-app .passport-field { min-width: 0; }
+  #wedding-planner-app .passport-field p {
+    margin-top: 2px;
+    overflow-wrap: anywhere;
+  }
+  #wedding-planner-app .visa-stamp {
+    display: grid;
+    width: 66px;
+    height: 66px;
+    flex: 0 0 auto;
+    place-items: center;
+    padding: 8px;
+    border: 2px dashed var(--dusty-pink);
+    border-radius: 50%;
+    color: var(--accent-foreground);
+    text-align: center;
+    transform: rotate(-7deg);
+  }
+  #wedding-planner-app .visa-stamp span { letter-spacing: .07em; }
+  #wedding-planner-app .passport-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    padding-left: 18px;
+    border-left: 1px dashed var(--border);
+  }
+  #wedding-planner-app .route-line {
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--primary);
+  }
+  #wedding-planner-app .route-line::before,
+  #wedding-planner-app .route-line::after {
+    content: '';
+    height: 1px;
+    flex: 1 1 auto;
+    background: var(--border);
+  }
+  #wedding-planner-app .travel-countdown { font-weight: 500; }
+  #wedding-planner-app .barcode {
+    height: 28px;
+    background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--foreground) 65%, transparent) 0 1px, transparent 1px 4px, color-mix(in srgb, var(--foreground) 35%, transparent) 4px 6px, transparent 6px 9px);
+  }
+  #wedding-planner-app .passport-number {
+    color: var(--muted-foreground);
+    letter-spacing: .16em;
+    text-align: center;
+  }
+  #wedding-planner-app .quick-task-bar {
+    align-items: flex-end;
+    margin-top: 12px;
+  }
+  #wedding-planner-app .quick-task-bar .form-control { flex: 1 1 220px; }
+  #wedding-planner-app .recovery-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr);
+    gap: 18px;
+    align-items: center;
+    background: linear-gradient(115deg, color-mix(in srgb, var(--sage-soft) 64%, var(--card)), color-mix(in srgb, var(--dusty-pink-soft) 28%, var(--card)));
+  }
+  #wedding-planner-app .recovery-copy {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  #wedding-planner-app .recovery-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--primary-foreground);
+    background: var(--primary);
+  }
+  #wedding-planner-app .recovery-actions { display: grid; gap: 8px; }
+  #wedding-planner-app .reward-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    gap: 12px;
+  }
+  #wedding-planner-app .level-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 92% 10%, color-mix(in srgb, var(--viz-series-2) 28%, transparent), transparent 30%),
+      linear-gradient(135deg, color-mix(in srgb, var(--viz-series-3) 30%, var(--card)), color-mix(in srgb, var(--viz-series-1) 18%, var(--card)));
+  }
+  #wedding-planner-app .level-card::after {
+    content: '';
+    position: absolute;
+    right: -65px;
+    bottom: -95px;
+    width: 220px;
+    height: 220px;
+    border: 24px solid color-mix(in srgb, var(--foreground) 5%, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  #wedding-planner-app .level-orb {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 92px;
+    height: 92px;
+    place-items: center;
+    border-radius: 50%;
+    background: conic-gradient(var(--viz-series-4) var(--level-progress), color-mix(in srgb, var(--foreground) 10%, transparent) 0);
+  }
+  #wedding-planner-app .level-orb::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--card) 86%, var(--background));
+  }
+  #wedding-planner-app .level-orb-content {
+    position: relative;
+    display: grid;
+    place-items: center;
+    text-align: center;
+  }
+  #wedding-planner-app .level-number { font-weight: 500; }
+  #wedding-planner-app .level-copy { position: relative; z-index: 1; min-width: 0; }
+  #wedding-planner-app .level-title-row,
+  #wedding-planner-app .reward-row,
+  #wedding-planner-app .achievement-row {
+    display: flex;
+    align-items: center;
+  }
+  #wedding-planner-app .level-title-row { justify-content: space-between; gap: 10px; }
+  #wedding-planner-app .reward-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+  #wedding-planner-app .reward-mini-stat {
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+  }
+  #wedding-planner-app .reward-list,
+  #wedding-planner-app .achievement-list { display: grid; gap: 4px; }
+  #wedding-planner-app .achievement-groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+  #wedding-planner-app .reward-row,
+  #wedding-planner-app .achievement-row {
+    gap: 10px;
+    padding-block: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .reward-row:last-child,
+  #wedding-planner-app .achievement-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .reward-row-main,
+  #wedding-planner-app .achievement-copy { min-width: 0; flex: 1 1 auto; }
+  #wedding-planner-app .reward-icon,
+  #wedding-planner-app .achievement-icon {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--reward-color) 24%, transparent);
+  }
+  #wedding-planner-app [data-reward-series="1"] { --reward-color: var(--viz-series-1); }
+  #wedding-planner-app [data-reward-series="2"] { --reward-color: var(--viz-series-2); }
+  #wedding-planner-app [data-reward-series="3"] { --reward-color: var(--viz-series-3); }
+  #wedding-planner-app [data-reward-series="4"] { --reward-color: var(--viz-series-4); }
+  #wedding-planner-app [data-reward-series="5"] { --reward-color: var(--viz-series-5); }
+  #wedding-planner-app [data-reward-series="6"] { --reward-color: var(--viz-series-6); }
+  #wedding-planner-app .reward-progress { height: 6px; margin-top: 5px; }
+  #wedding-planner-app .reward-progress .progress-fill { background: var(--reward-color); }
+  #wedding-planner-app .achievement-row.is-locked { opacity: .62; }
+  #wedding-planner-app .achievement-row.is-unlocked .achievement-icon {
+    color: var(--primary-foreground);
+    background: var(--reward-color);
+  }
+  #wedding-planner-app .reward-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 4px solid var(--viz-series-4);
+    background: linear-gradient(100deg, color-mix(in srgb, var(--viz-series-4) 18%, var(--card)), color-mix(in srgb, var(--viz-series-3) 10%, var(--card)));
+  }
+  #wedding-planner-app .reward-toast-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--primary-foreground);
+    background: var(--viz-series-4);
+  }
+  #wedding-planner-app .seating-workspace {
+    display: grid;
+    grid-template-columns: minmax(185px, 220px) minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+  #wedding-planner-app .seating-tools,
+  #wedding-planner-app .seating-inspector,
+  #wedding-planner-app .seating-tool-section,
+  #wedding-planner-app .seating-selected-fields,
+  #wedding-planner-app .seating-guest-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #wedding-planner-app .seating-tool-section + .seating-tool-section {
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  #wedding-planner-app .seating-button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  #wedding-planner-app .seating-stage { min-width: 0; }
+  #wedding-planner-app .seating-canvas-wrap {
+    position: relative;
+    height: clamp(390px, 58vw, 590px);
+    min-width: 0;
+    overflow: hidden;
+    background: var(--muted);
+  }
+  #wedding-planner-app #seat-plan-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    touch-action: none;
+  }
+  #wedding-planner-app #seat-plan-canvas.dragging { cursor: grabbing; }
+  #wedding-planner-app .seating-status {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    max-width: calc(100% - 20px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #wedding-planner-app .seating-inspector {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  }
+  #wedding-planner-app .seating-selected-fields {
+    padding-right: 12px;
+    border-right: 1px dashed var(--border);
+  }
+  #wedding-planner-app .seating-inline-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  #wedding-planner-app .seating-help { margin-top: 4px; }
+
+  @media (max-width: 840px) {
+    #wedding-planner-app .app-shell { display: block; }
+    #wedding-planner-app .app-sidebar { position: static; margin-bottom: 12px; }
+    #wedding-planner-app .nav-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    #wedding-planner-app .sidebar-foot { display: none; }
+    #wedding-planner-app .content-split { grid-template-columns: 1fr; }
+    #wedding-planner-app .recovery-panel { grid-template-columns: 1fr; }
+    #wedding-planner-app .reward-overview,
+    #wedding-planner-app .calendar-detail-layout,
+    #wedding-planner-app .achievement-groups { grid-template-columns: 1fr; }
+    #wedding-planner-app .seating-workspace { grid-template-columns: 1fr; }
+    #wedding-planner-app .seating-tools {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #wedding-planner-app .seating-tool-section + .seating-tool-section {
+      padding-top: 0;
+      padding-left: 12px;
+      border-top: 0;
+      border-left: 1px dashed var(--border);
+    }
+  }
+  @media (max-width: 620px) {
+    #wedding-planner-app .app-header,
+    #wedding-planner-app .section-head { align-items: flex-start; flex-direction: column; }
+    #wedding-planner-app .header-actions { justify-content: flex-start; }
+    #wedding-planner-app .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #wedding-planner-app .dashboard-grid,
+    #wedding-planner-app .form-grid { grid-template-columns: 1fr; }
+    #wedding-planner-app .form-grid .span-2 { grid-column: auto; }
+    #wedding-planner-app .item-row,
+    #wedding-planner-app .category-row { grid-template-columns: 1fr 1fr; }
+    #wedding-planner-app .item-row .item-main,
+    #wedding-planner-app .item-row .item-actions,
+    #wedding-planner-app .category-row .category-main,
+    #wedding-planner-app .category-row .item-actions { grid-column: 1 / -1; }
+    #wedding-planner-app .item-actions { justify-content: flex-start; }
+    #wedding-planner-app .guest-row { grid-template-columns: 1fr; }
+    #wedding-planner-app .guest-row .guest-main,
+    #wedding-planner-app .guest-row .guest-status-grid,
+    #wedding-planner-app .guest-row .item-actions { grid-column: 1 / -1; }
+    #wedding-planner-app .calendar-grid { gap: 4px; }
+    #wedding-planner-app .calendar-day,
+    #wedding-planner-app .calendar-spacer { min-height: 0; }
+    #wedding-planner-app .calendar-day { gap: 4px; padding: 5px; }
+    #wedding-planner-app .calendar-day-number { width: 24px; height: 24px; }
+    #wedding-planner-app .calendar-entry-indicator {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      padding: 2px;
+    }
+    #wedding-planner-app .calendar-entry-indicator span { display: none; }
+    #wedding-planner-app .calendar-event-chip {
+      width: 7px;
+      height: 7px;
+      padding: 0;
+      border-radius: 50%;
+      color: transparent;
+    }
+    #wedding-planner-app .calendar-day-events { display: flex; gap: 3px; }
+    #wedding-planner-app .calendar-event-row { grid-template-columns: 58px minmax(0, 1fr); }
+    #wedding-planner-app .calendar-event-row .item-actions { grid-column: 1 / -1; }
+    #wedding-planner-app .budget-subcategory-list { margin-left: 2px; padding-left: 10px; }
+    #wedding-planner-app .budget-visual { grid-template-columns: 1fr; }
+    #wedding-planner-app .donut-wrap { margin-inline: auto; }
+    #wedding-planner-app .passport-hero { grid-template-columns: 1fr; }
+    #wedding-planner-app .level-card { grid-template-columns: 1fr; }
+    #wedding-planner-app .level-orb { width: 78px; height: 78px; }
+    #wedding-planner-app .passport-side {
+      padding-top: 14px;
+      padding-left: 0;
+      border-top: 1px dashed var(--border);
+      border-left: 0;
+    }
+    #wedding-planner-app .seating-tools,
+    #wedding-planner-app .seating-inspector { grid-template-columns: 1fr; }
+    #wedding-planner-app .seating-tool-section + .seating-tool-section,
+    #wedding-planner-app .seating-selected-fields {
+      padding-top: 10px;
+      padding-right: 0;
+      padding-left: 0;
+      border-top: 1px dashed var(--border);
+      border-right: 0;
+      border-left: 0;
+    }
+    #wedding-planner-app .seating-canvas-wrap { height: 430px; }
+  }
+  @media (max-width: 390px) {
+    #wedding-planner-app .check-row { grid-template-columns: minmax(0, 1fr) auto; }
+    #wedding-planner-app .check-row .check-date { grid-column: 1 / -1; padding-left: 32px; }
+    #wedding-planner-app .timeline-row { grid-template-columns: 56px minmax(0, 1fr); }
+    #wedding-planner-app .timeline-row .item-actions { grid-column: 1 / -1; }
+    #wedding-planner-app .passport-details { grid-template-columns: 1fr; }
+    #wedding-planner-app .guest-status-grid { grid-template-columns: 1fr; }
+    #wedding-planner-app .reward-mini-stats { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #wedding-planner-app .progress-fill,
+    #wedding-planner-app .item-row,
+    #wedding-planner-app .check-row,
+    #wedding-planner-app .guest-row,
+    #wedding-planner-app .calendar-event-row,
+    #wedding-planner-app .nav-list .btn,
+    #wedding-planner-app .viz-stat,
+    #wedding-planner-app .level-card,
+    #wedding-planner-app .calendar-day,
+    #wedding-planner-app .calendar-entry-indicator,
+    #wedding-planner-app .achievement-icon,
+    #wedding-planner-app .reward-icon,
+    #wedding-planner-app .wildflower-sprig svg { transition: none; }
+  }
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById('wedding-planner-app');
+  const content = root.querySelector('#app-content');
+  const nav = root.querySelector('#main-nav');
+  const fileInput = root.querySelector('#import-file');
+  const storageKey = 'tahdon-wedding-planner-v1';
+  const recoveryKey = 'tahdon-wedding-planner-recovery-v1';
+  const recoveryLimit = 8;
+  const legacyValues = {
+    'Meidän häät':'Our Wedding', 'Juhlapaikka':'Venue', 'Ruoka & juoma':'Food & drinks',
+    'Valokuvaus':'Photography', 'Musiikki':'Music', 'Vaatetus':'Attire',
+    'Kukat & somistus':'Flowers & decor', 'Kuljetus':'Transport', 'Paperituotteet':'Stationery',
+    'Majoitus':'Accommodation', 'Muut':'Other', 'Muu':'Other', 'Perusteet':'Essentials', 'Paikat':'Venues',
+    'Vieraat':'Guests', 'Palveluntarjoajat':'Vendors', 'Viestintä':'Communication',
+    'Vahvista hääpäivä':'Confirm the wedding date', 'Varaa juhlatila':'Book the venue',
+    'Tee alustava vieraslista':'Draft the guest list',
+    'Pyydä tarjoukset valokuvaajilta':'Request photography quotes',
+    'Lähetä save the date -viestit':'Send save-the-dates', 'Pöytä 1':'Table 1',
+    'Pyöreä':'Round', 'Pitkä':'Long', 'U-malli':'U-shape', 'Tapaaminen':'Meeting',
+    'Määräpäivä':'Deadline', 'Maksu':'Payment', 'Varaus':'Booking', 'Hääpäivä':'Wedding day',
+    'Ei lähetetty':'Not sent', 'Lähetetty':'Sent', 'Odottaa vastausta':'Awaiting reply',
+    'Tulossa':'Attending', 'Ei tule':'Declined', 'Ei valintaa':'Nothing selected',
+    'Alkoholillinen':'Alcohol', 'Alkoholiton':'Alcohol-free', 'Ei liitosta':'No link',
+    'Avec':'Plus-one', 'Lapsi':'Child', 'Harkinnassa':'Considering',
+    'Tarjous pyydetty':'Quote requested', 'Varattu':'Booked', 'Sopimus tehty':'Contract signed',
+    'Valmis':'Complete', 'Tarvitaan':'Needed', 'Tilattu':'Ordered', 'Hankittu':'Purchased',
+    'Ei tarvita':'Not needed', 'Morsian / Bride':'Bride', 'Sulhanen / Groom':'Groom',
+    'Yhteinen / Joint':'Joint', 'Muu / Other':'Other'
+  };
+  const migrateLegacyValue = value => legacyValues[value] || value;
+  const readRecoverySnapshots = () => {
+    try {
+      const value = JSON.parse(localStorage.getItem(recoveryKey));
+      return Array.isArray(value) ? value.filter(item => item && item.state && item.timestamp) : [];
+    } catch { return []; }
+  };
+  const colors = ['var(--viz-series-1)','var(--viz-series-2)','var(--viz-series-3)','var(--viz-series-4)','var(--viz-series-5)','var(--viz-series-6)'];
+  const starterPlanConfig = globalThis.WEDDING_DEFAULT_PLAN && typeof globalThis.WEDDING_DEFAULT_PLAN === 'object'
+    ? globalThis.WEDDING_DEFAULT_PLAN
+    : {};
+  const fallbackBudgetCategories = ['Venue','Food & drinks','Photography','Music','Attire','Flowers & decor','Transport','Stationery','Accommodation','Other'];
+  const defaultBudgetCategories = Array.isArray(starterPlanConfig.budgetCategories) && starterPlanConfig.budgetCategories.length
+    ? starterPlanConfig.budgetCategories.map(value => String(value || '').trim()).filter(Boolean)
+    : fallbackBudgetCategories;
+  const navItems = [
+    ['dashboard','layout-dashboard','Overview'],
+    ['rewards','trophy','Rewards'],
+    ['budget','wallet-cards','Budget'],
+    ['checklist','list-checks','Checklist'],
+    ['calendar','calendar-days','Calendar'],
+    ['guests','users','Guest list'],
+    ['ceremony','church','Ceremony'],
+    ['reception','party-popper','Reception'],
+    ['vendors','store','Vendors'],
+    ['seating','armchair','Seating plan'],
+    ['supplies','package-check','Supplies']
+  ];
+
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+  const freshSeatingPlan = () => ({
+    items: [], selectedId: null, guestList: '', pxPerMeter: 14.25, showGrid: true,
+    view: { x: 0, y: 0, scale: 1, rotation: 0 }
+  });
+  const fallbackChecklist = [
+    { text: 'Confirm the wedding date', category: 'Essentials', due: '', done: false },
+    { text: 'Book the venue', category: 'Venues', due: '', done: false },
+    { text: 'Draft the guest list', category: 'Guests', due: '', done: false },
+    { text: 'Request photography quotes', category: 'Vendors', due: '', done: false },
+    { text: 'Send save-the-dates', category: 'Communication', due: '', done: false }
+  ];
+  const fallbackTables = [{ name: 'Table 1', shape: 'Round', seats: 8, assigned: 0, notes: '' }];
+  const configuredChecklist = Array.isArray(starterPlanConfig.checklist) ? starterPlanConfig.checklist : fallbackChecklist;
+  const configuredTables = Array.isArray(starterPlanConfig.tables) ? starterPlanConfig.tables : fallbackTables;
+  const freshState = () => ({
+    version: 9,
+    meta: { eventName: 'Our Wedding', weddingDate: '', websiteUrl: '', ...(starterPlanConfig.meta || {}) },
+    totalBudget: 0,
+    budgetCategories: [...defaultBudgetCategories],
+    checklist: configuredChecklist.map(item => ({ id: uid(), text: '', category: 'General', due: '', done: false, ...item })),
+    calendarEvents: [],
+    guests: [],
+    ceremony: { venue: '', address: '', time: '', contact: '', notes: '' },
+    reception: { venue: '', address: '', time: '', contact: '', notes: '' },
+    timeline: [],
+    vendors: [],
+    tables: configuredTables.map(item => ({ id: uid(), name: 'Table', shape: 'Round', seats: 8, assigned: 0, notes: '', ...item })),
+    seatingPlan: freshSeatingPlan(),
+    supplies: [],
+    budget: [],
+    budgetPayments: [],
+    rewards: { xp: 0, unlocked: [], actions: { manualSaves:0, exports:0, imports:0, restores:0 } }
+  });
+
+  const normalizeState = (raw, resetLegacyBudget=false) => {
+    const base = freshState();
+    if (!raw || typeof raw !== 'object') return base;
+    const budgetRows = (Array.isArray(raw.budget) ? raw.budget : base.budget).map(row => ({ ...row, category:migrateLegacyValue(row.category) }));
+    const storedCategories = Array.isArray(raw.budgetCategories)
+      ? raw.budgetCategories.map(value => migrateLegacyValue(String(value || '').trim())).filter(Boolean)
+      : [...defaultBudgetCategories];
+    const budgetCategoryNames = budgetRows.map(row => String(row?.category || '').trim()).filter(Boolean);
+    const normalizedCategories = [...new Set([...storedCategories, ...budgetCategoryNames])];
+    const storedTotalBudget = Number(raw.totalBudget);
+    const inferredTotalBudget = budgetRows.reduce((sum,row) => sum + Math.max(0,Number(row.planned)||0),0);
+    const clearOldBudget = resetLegacyBudget && Number(raw.version || 1) < 2;
+    return {
+      ...base,
+      ...raw,
+      version: 9,
+      totalBudget: clearOldBudget ? 0 : Number.isFinite(storedTotalBudget) && storedTotalBudget >= 0 ? storedTotalBudget : inferredTotalBudget,
+      meta: { ...base.meta, ...(raw.meta || {}), eventName:migrateLegacyValue(raw.meta?.eventName || base.meta.eventName) },
+      ceremony: { ...base.ceremony, ...(raw.ceremony || {}) },
+      reception: { ...base.reception, ...(raw.reception || {}) },
+      checklist: Array.isArray(raw.checklist) ? raw.checklist.map(item => ({ ...item, text:migrateLegacyValue(item.text), category:migrateLegacyValue(item.category) })) : base.checklist,
+      calendarEvents: Array.isArray(raw.calendarEvents) ? raw.calendarEvents.map(item => ({ ...item, category:migrateLegacyValue(item.category) })) : [],
+      guests: Array.isArray(raw.guests) ? raw.guests.map(guest => ({
+        ...guest,
+        invitation: migrateLegacyValue(guest.invitation || 'Not sent'),
+        rsvp: migrateLegacyValue(guest.rsvp || 'Awaiting reply'),
+        drinkPreference: migrateLegacyValue(guest.drinkPreference || 'Nothing selected'),
+        companionType: migrateLegacyValue(guest.companionType || 'No link'),
+        linkedGuestId: guest.linkedGuestId || ''
+      })) : [],
+      timeline: Array.isArray(raw.timeline) ? raw.timeline : [],
+      vendors: Array.isArray(raw.vendors) ? raw.vendors.map(item => ({ ...item, type:migrateLegacyValue(item.type), status:migrateLegacyValue(item.status) })) : [],
+      tables: Array.isArray(raw.tables) ? raw.tables.map(item => ({ ...item, name:migrateLegacyValue(item.name), shape:migrateLegacyValue(item.shape) })) : base.tables,
+      seatingPlan: {
+        ...base.seatingPlan,
+        ...(raw.seatingPlan || {}),
+        items: Array.isArray(raw.seatingPlan?.items) ? raw.seatingPlan.items : [],
+        view: { ...base.seatingPlan.view, ...(raw.seatingPlan?.view || {}) }
+      },
+      supplies: Array.isArray(raw.supplies) ? raw.supplies.map(item => ({ ...item, status:migrateLegacyValue(item.status) })) : [],
+      budgetCategories: normalizedCategories,
+      budget: clearOldBudget ? [] : budgetRows,
+      budgetPayments: clearOldBudget ? [] : Array.isArray(raw.budgetPayments) ? raw.budgetPayments.map(item => ({ ...item, payer:migrateLegacyValue(item.payer) })) : [],
+      rewards: {
+        xp: Math.max(0, Number(raw.rewards?.xp) || 0),
+        unlocked: Array.isArray(raw.rewards?.unlocked) ? raw.rewards.unlocked.filter(item => item && item.id) : [],
+        actions: {
+          manualSaves: Math.max(0, Number(raw.rewards?.actions?.manualSaves) || 0),
+          exports: Math.max(0, Number(raw.rewards?.actions?.exports) || 0),
+          imports: Math.max(0, Number(raw.rewards?.actions?.imports) || 0),
+          restores: Math.max(0, Number(raw.rewards?.actions?.restores) || 0)
+        }
+      }
+    };
+  };
+
+  let storedState = null;
+  try { storedState = JSON.parse(localStorage.getItem(storageKey)); } catch {}
+  const bootRecovery = !storedState ? readRecoverySnapshots()[0] : null;
+  let state = normalizeState(storedState || bootRecovery?.state, true);
+  try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
+  let recoveredOnBoot = Boolean(bootRecovery);
+  const ui = { section: 'dashboard', editBudget: null, editBudgetCategory: null, editBudgetPayment: null, editVendor: null, editTable: null, editSupply: null, editCalendarEvent: null, editGuest: null, guestDrinkFilter: 'All', calendarCursor: null, selectedCalendarDate: null, rewardToast: null };
+  let seatingCleanup = null;
+  let rewardToastTimer = null;
+
+  const esc = value => String(value ?? '').replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
+  const num = value => Math.max(0, Number(value) || 0);
+  const money = value => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(num(value));
+  const dateLabel = value => value ? new Intl.DateTimeFormat('en-GB', { day:'numeric', month:'short', year:'numeric' }).format(new Date(`${value}T12:00:00`)) : 'No date';
+  const todayIso = () => {
+    const date = new Date();
+    const pad = value => String(value).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+  };
+  const monthLabel = value => {
+    const [year,month] = value.split('-').map(Number);
+    const label = new Intl.DateTimeFormat('en-GB', { month:'long', year:'numeric' }).format(new Date(year, month-1, 1));
+    return label.charAt(0).toLocaleUpperCase('en') + label.slice(1);
+  };
+  const safeUrl = value => { try { const url = new URL(value); return /^https?:$/.test(url.protocol) ? url.href : ''; } catch { return ''; } };
+  const options = (items, selected) => items.map(item => `<option value="${esc(item)}" ${item === selected ? 'selected' : ''}>${esc(item)}</option>`).join('');
+  const empty = text => `<p class="empty-state text-muted">${esc(text)}</p>`;
+  const recoveryTimeLabel = value => {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? 'Unknown time' : new Intl.DateTimeFormat('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }).format(date);
+  };
+  let recoveryTimer = null;
+  let saveStatusTimer = null;
+
+  function createRecoverySnapshot(reason = 'Autosave', force = false) {
+    try {
+      const serialized = JSON.stringify(state);
+      const snapshots = readRecoverySnapshots();
+      if (!force && snapshots[0] && JSON.stringify(snapshots[0].state) === serialized) return false;
+      snapshots.unshift({ id:`${Date.now()}-${Math.random().toString(16).slice(2)}`, timestamp:new Date().toISOString(), reason, state:JSON.parse(serialized) });
+      while (snapshots.length > recoveryLimit) snapshots.pop();
+      while (snapshots.length > 1 && JSON.stringify(snapshots).length > 1800000) snapshots.pop();
+      localStorage.setItem(recoveryKey, JSON.stringify(snapshots));
+      refreshRecoveryPanel();
+      return true;
+    } catch { return false; }
+  }
+
+  function queueRecoverySnapshot(reason = 'Autosave') {
+    window.clearTimeout(recoveryTimer);
+    recoveryTimer = window.setTimeout(() => createRecoverySnapshot(reason), 500);
+  }
+
+  function saveState(message = 'Saved', snapshot = true) {
+    syncRewards(true);
+    let persisted = true;
+    try { localStorage.setItem(storageKey, JSON.stringify(state)); }
+    catch { persisted = false; }
+    const badge = root.querySelector('#save-status');
+    const now = new Intl.DateTimeFormat('en-GB', { hour:'2-digit', minute:'2-digit' }).format(new Date());
+    badge.textContent = persisted ? `${message} · ${now}` : `${message} · download a backup`;
+    window.clearTimeout(saveStatusTimer);
+    saveStatusTimer = window.setTimeout(() => { badge.textContent = persisted ? `Autosave on · ${now}` : 'Download a backup to protect your data'; }, 1400);
+    if (persisted && snapshot) queueRecoverySnapshot(message);
+    updateSubtitle();
+  }
+
+  function mutate(fn, message) {
+    fn();
+    saveState(message);
+    render();
+  }
+
+  function updateSubtitle() {
+    const date = state.meta.weddingDate ? ` · ${dateLabel(state.meta.weddingDate)}` : '';
+    root.querySelector('#event-subtitle').textContent = `${state.meta.eventName || 'Our Wedding'}${date}`;
+  }
+
+  function budgetTotals() {
+    return state.budget.reduce((acc, row) => {
+      acc.planned += num(row.planned); acc.actual += num(row.actual); acc.paid += num(row.paid); return acc;
+    }, { planned:0, actual:0, paid:0 });
+  }
+
+  function checklistStats() {
+    const total = state.checklist.length;
+    const done = state.checklist.filter(item => item.done).length;
+    return { total, done, pct: total ? Math.round(done / total * 100) : 0 };
+  }
+
+  function rewardStats() {
+    const ceremonyFields = ['venue','address','time','contact','notes'].filter(key => String(state.ceremony?.[key] || '').trim()).length;
+    const receptionFields = ['venue','address','time','contact','notes'].filter(key => String(state.reception?.[key] || '').trim()).length;
+    const seatingItems = state.seatingPlan?.items || [];
+    const seatingChairs = seatingItems.filter(item => item.type === 'chair').length;
+    const assignedSeats = seatingItems.filter(item => item.type === 'chair' && String(item.guest || '').trim()).length;
+    const seatingGuestCount = String(state.seatingPlan?.guestList || '').split(/\r?\n/).map(name => name.trim()).filter(Boolean).length;
+    const completedTasks = state.checklist.filter(item => item.done).length;
+    const budgetMoneyRows = state.budget.filter(item => num(item.planned) > 0 || num(item.actual) > 0 || num(item.paid) > 0).length;
+    const budgetActualRows = state.budget.filter(item => num(item.actual) > 0).length;
+    const fullyPaidBudgetItems = state.budget.filter(item => num(item.actual) > 0 && num(item.paid) >= num(item.actual)).length;
+    const distinctPayers = new Set(state.budgetPayments.map(item => String(item.payer || '').trim()).filter(Boolean)).size;
+    const invitationsSent = state.guests.filter(item => item.invitation === 'Sent').length;
+    const rsvpAnswered = state.guests.filter(item => ['Attending','Declined'].includes(item.rsvp)).length;
+    const drinkChoices = state.guests.filter(item => ['Alcohol','Alcohol-free'].includes(item.drinkPreference)).length;
+    const plusOnesLinked = state.guests.filter(item => item.companionType === 'Plus-one' && item.linkedGuestId).length;
+    const childrenLinked = state.guests.filter(item => item.companionType === 'Child' && item.linkedGuestId).length;
+    const vendorsBooked = state.vendors.filter(item => ['Booked','Contract signed','Complete'].includes(item.status)).length;
+    const vendorsContracted = state.vendors.filter(item => ['Contract signed','Complete'].includes(item.status)).length;
+    const purchasedSupplies = state.supplies.filter(item => item.status === 'Purchased').length;
+    const ceremonyReady = Boolean(state.ceremony?.venue && state.ceremony?.address && state.ceremony?.time);
+    const receptionReady = Boolean(state.reception?.venue && state.reception?.address && state.reception?.time);
+    const weddingDays = daysUntil();
+    const weddingDateSet = Boolean(state.meta?.weddingDate);
+    const websiteSet = Boolean(safeUrl(state.meta?.websiteUrl));
+    const customEventName = Boolean(state.meta?.eventName && state.meta.eventName !== 'Our Wedding');
+    const calendarTypes = new Set(state.calendarEvents.map(item => item.category).filter(Boolean)).size;
+    const actions = state.rewards?.actions || {};
+    const coverage = [
+      completedTasks > 0,
+      num(state.totalBudget) > 0 || state.budget.length > 0,
+      state.guests.length > 0,
+      state.vendors.length > 0,
+      ceremonyFields > 0,
+      receptionFields > 0,
+      state.calendarEvents.length > 0,
+      assignedSeats > 0,
+      state.supplies.length > 0
+    ].filter(Boolean).length;
+    return {
+      completedTasks,
+      checklistTasks: state.checklist.length,
+      allTasksComplete: state.checklist.length > 0 && completedTasks === state.checklist.length,
+      budgetItems: state.budget.length,
+      budgetCategories: state.budgetCategories.length,
+      budgetMoneyRows,
+      budgetActualRows,
+      fullyPaidBudgetItems,
+      distinctPayers,
+      paymentCount: state.budgetPayments.length,
+      totalBudget: num(state.totalBudget),
+      actualSpend: state.budget.reduce((sum,item) => sum + num(item.actual), 0),
+      guests: state.guests.length,
+      invitationsSent,
+      rsvpAnswered,
+      drinkChoices,
+      plusOnesLinked,
+      childrenLinked,
+      vendors: state.vendors.length,
+      vendorsBooked,
+      vendorsContracted,
+      ceremonyFields,
+      receptionFields,
+      ceremonyVenueSet: Boolean(state.ceremony?.venue),
+      receptionVenueSet: Boolean(state.reception?.venue),
+      ceremonyReady,
+      receptionReady,
+      calendarEvents: state.calendarEvents.length,
+      calendarTypes,
+      timelineItems: state.timeline.length,
+      weddingDateSet,
+      weddingDays,
+      websiteSet,
+      customEventName,
+      seatingItems: seatingItems.length,
+      seatingChairs,
+      assignedSeats,
+      seatingGuestCount,
+      fullySeated: seatingGuestCount > 0 && assignedSeats >= seatingGuestCount,
+      supplies: state.supplies.length,
+      purchasedSupplies,
+      allSuppliesPurchased: state.supplies.length > 0 && purchasedSupplies === state.supplies.length,
+      manualSaves: Math.max(0, Number(actions.manualSaves) || 0),
+      exports: Math.max(0, Number(actions.exports) || 0),
+      imports: Math.max(0, Number(actions.imports) || 0),
+      restores: Math.max(0, Number(actions.restores) || 0),
+      coverage
+    };
+  }
+
+  function achievementDefinitions() {
+    const definitions = [
+      { group:'Wedding journey', id:'date-set', title:'Save the date', description:'Set your wedding date.', icon:'calendar-heart', series:2, target:1, value:s=>s.weddingDateSet ? 1 : 0 },
+      { group:'Wedding journey', id:'website-live', title:'Wedding website live', description:'Add your wedding website link.', icon:'globe-2', series:5, target:1, value:s=>s.websiteSet ? 1 : 0 },
+      { group:'Wedding journey', id:'named-celebration', title:'Make it yours', description:'Give your celebration a custom name.', icon:'pen-line', series:3, target:1, value:s=>s.customEventName ? 1 : 0 },
+      { group:'Wedding journey', id:'travel-document', title:'Travel document complete', description:'Set the name, date and wedding website.', icon:'book-open-check', series:4, target:3, value:s=>Number(s.customEventName)+Number(s.weddingDateSet)+Number(s.websiteSet) },
+      { group:'Wedding journey', id:'one-year-countdown', title:'One year to go', description:'Reach the final 365 days before the wedding.', icon:'hourglass', series:1, target:1, value:s=>s.weddingDays !== null && s.weddingDays >= 0 && s.weddingDays <= 365 ? 1 : 0 },
+      { group:'Wedding journey', id:'hundred-day-countdown', title:'100-day countdown', description:'Reach 100 days before the wedding.', icon:'timer', series:4, target:1, value:s=>s.weddingDays !== null && s.weddingDays >= 0 && s.weddingDays <= 100 ? 1 : 0 },
+      { group:'Wedding journey', id:'thirty-day-countdown', title:'Final month', description:'Reach 30 days before the wedding.', icon:'party-popper', series:6, target:1, value:s=>s.weddingDays !== null && s.weddingDays >= 0 && s.weddingDays <= 30 ? 1 : 0 },
+      { group:'Wedding journey', id:'all-rounder', title:'Wedding all-rounder', description:'Make progress in six planning areas.', icon:'crown', series:3, target:6, value:s=>s.coverage },
+
+      { group:'Checklist', id:'list-builder', title:'List builder', description:'Grow your checklist to ten tasks.', icon:'list-plus', series:5, target:10, value:s=>s.checklistTasks },
+      { group:'Checklist', id:'first-spark', title:'First spark', description:'Complete your first checklist task.', icon:'sparkles', series:4, target:1, value:s=>s.completedTasks },
+      { group:'Checklist', id:'three-down', title:'Three down', description:'Complete three wedding tasks.', icon:'check-check', series:2, target:3, value:s=>s.completedTasks },
+      { group:'Checklist', id:'checklist-hero', title:'Checklist hero', description:'Complete five wedding tasks.', icon:'list-checks', series:1, target:5, value:s=>s.completedTasks },
+      { group:'Checklist', id:'productive-ten', title:'Productive ten', description:'Complete ten wedding tasks.', icon:'badge-check', series:5, target:10, value:s=>s.completedTasks },
+      { group:'Checklist', id:'task-master', title:'Task master', description:'Complete twenty wedding tasks.', icon:'medal', series:3, target:20, value:s=>s.completedTasks },
+      { group:'Checklist', id:'forty-task-legend', title:'Forty-task legend', description:'Complete forty wedding tasks.', icon:'trophy', series:4, target:40, value:s=>s.completedTasks },
+      { group:'Checklist', id:'checklist-complete', title:'Nothing left behind', description:'Complete every task currently on your checklist.', icon:'circle-check-big', series:1, target:1, value:s=>s.allTasksComplete ? 1 : 0 },
+
+      { group:'Budget', id:'budget-set', title:'Budget grounded', description:'Set your total wedding budget.', icon:'wallet-cards', series:5, target:1, value:s=>s.totalBudget > 0 ? 1 : 0 },
+      { group:'Budget', id:'first-budget-item', title:'First allocation', description:'Add your first budget subcategory.', icon:'badge-euro', series:1, target:1, value:s=>s.budgetItems },
+      { group:'Budget', id:'budget-architect', title:'Budget architect', description:'Add five budget subcategories.', icon:'chart-pie', series:3, target:5, value:s=>s.budgetItems },
+      { group:'Budget', id:'budget-detailer', title:'Budget detailer', description:'Add ten budget subcategories.', icon:'table-properties', series:2, target:10, value:s=>s.budgetItems },
+      { group:'Budget', id:'real-cost', title:'Real numbers', description:'Record an actual wedding expense.', icon:'calculator', series:6, target:1, value:s=>s.budgetActualRows },
+      { group:'Budget', id:'money-trail', title:'Money trail', description:'Record who paid a wedding expense.', icon:'receipt-text', series:4, target:1, value:s=>s.paymentCount },
+      { group:'Budget', id:'payment-pro', title:'Payment pro', description:'Record five payment shares.', icon:'banknote', series:5, target:5, value:s=>s.paymentCount },
+      { group:'Budget', id:'team-effort', title:'Team effort', description:'Track payments from two different payers.', icon:'hand-coins', series:2, target:2, value:s=>s.distinctPayers },
+      { group:'Budget', id:'paid-in-full', title:'Paid in full', description:'Fully pay one actual budget item.', icon:'circle-dollar-sign', series:1, target:1, value:s=>s.fullyPaidBudgetItems },
+      { group:'Budget', id:'five-paid', title:'Five bills conquered', description:'Fully pay five actual budget items.', icon:'badge-check', series:4, target:5, value:s=>s.fullyPaidBudgetItems },
+
+      { group:'Guest list', id:'first-guest', title:'First guest', description:'Add the first person to your guest list.', icon:'user-plus', series:2, target:1, value:s=>s.guests },
+      { group:'Guest list', id:'guest-gathering', title:'Guest gathering', description:'Add ten guests.', icon:'users', series:2, target:10, value:s=>s.guests },
+      { group:'Guest list', id:'party-growing', title:'The party is growing', description:'Add twenty-five guests.', icon:'contact-round', series:5, target:25, value:s=>s.guests },
+      { group:'Guest list', id:'full-house', title:'Full house', description:'Build a guest list of fifty people.', icon:'party-popper', series:6, target:50, value:s=>s.guests },
+      { group:'Guest list', id:'grand-celebration', title:'Grand celebration', description:'Build a guest list of one hundred people.', icon:'sparkles', series:4, target:100, value:s=>s.guests },
+      { group:'Guest list', id:'first-invite', title:'First invitation sent', description:'Mark your first invitation as sent.', icon:'send', series:5, target:1, value:s=>s.invitationsSent },
+      { group:'Guest list', id:'invitations-airborne', title:'Invitations airborne', description:'Mark ten invitations as sent.', icon:'mail-check', series:5, target:10, value:s=>s.invitationsSent },
+      { group:'Guest list', id:'invitation-wave', title:'Invitation wave', description:'Mark twenty-five invitations as sent.', icon:'mails', series:3, target:25, value:s=>s.invitationsSent },
+      { group:'Guest list', id:'everyone-invited', title:'Everyone invited', description:'Send an invitation to every listed guest.', icon:'badge-check', series:1, target:1, value:s=>s.guests > 0 && s.invitationsSent === s.guests ? 1 : 0 },
+      { group:'Guest list', id:'first-rsvp', title:'First RSVP', description:'Record your first RSVP response.', icon:'message-circle-check', series:1, target:1, value:s=>s.rsvpAnswered },
+      { group:'Guest list', id:'rsvp-ten', title:'RSVP momentum', description:'Record ten RSVP responses.', icon:'messages-square', series:3, target:10, value:s=>s.rsvpAnswered },
+      { group:'Guest list', id:'all-rsvps', title:'Guest list confirmed', description:'Record an RSVP for every listed guest.', icon:'clipboard-check', series:4, target:1, value:s=>s.guests > 0 && s.rsvpAnswered === s.guests ? 1 : 0 },
+      { group:'Guest list', id:'drink-planner', title:'Drinks planner', description:'Record ten drink choices.', icon:'wine', series:6, target:10, value:s=>s.drinkChoices },
+      { group:'Guest list', id:'plus-one-linked', title:'Perfect pair', description:'Link a plus-one to another guest.', icon:'heart-handshake', series:2, target:1, value:s=>s.plusOnesLinked },
+      { group:'Guest list', id:'child-linked', title:'Family planner', description:'Link a child to an adult guest.', icon:'baby', series:5, target:1, value:s=>s.childrenLinked },
+
+      { group:'Vendors', id:'vendor-scout', title:'Vendor scout', description:'Add your first vendor.', icon:'store', series:1, target:1, value:s=>s.vendors },
+      { group:'Vendors', id:'vendor-trio', title:'Vendor trio', description:'Add three wedding vendors.', icon:'boxes', series:5, target:3, value:s=>s.vendors },
+      { group:'Vendors', id:'dream-team', title:'Dream team', description:'Add five wedding vendors.', icon:'handshake', series:3, target:5, value:s=>s.vendors },
+      { group:'Vendors', id:'vendor-network', title:'Vendor network', description:'Add ten wedding vendors.', icon:'network', series:6, target:10, value:s=>s.vendors },
+      { group:'Vendors', id:'first-booking', title:'First vendor booked', description:'Book your first vendor.', icon:'calendar-check', series:2, target:1, value:s=>s.vendorsBooked },
+      { group:'Vendors', id:'five-booked', title:'Team assembled', description:'Book five wedding vendors.', icon:'users-round', series:4, target:5, value:s=>s.vendorsBooked },
+      { group:'Vendors', id:'contract-signed', title:'Signed and secured', description:'Mark a vendor contract as signed.', icon:'file-signature', series:1, target:1, value:s=>s.vendorsContracted },
+
+      { group:'Calendar & venues', id:'first-calendar-event', title:'Calendar started', description:'Add your first calendar entry.', icon:'calendar-plus', series:5, target:1, value:s=>s.calendarEvents },
+      { group:'Calendar & venues', id:'calendar-keeper', title:'Calendar keeper', description:'Add five calendar entries.', icon:'calendar-check', series:5, target:5, value:s=>s.calendarEvents },
+      { group:'Calendar & venues', id:'calendar-ten', title:'Plans in motion', description:'Add ten calendar entries.', icon:'calendar-range', series:3, target:10, value:s=>s.calendarEvents },
+      { group:'Calendar & venues', id:'calendar-twenty', title:'Master schedule', description:'Add twenty calendar entries.', icon:'calendar-days', series:4, target:20, value:s=>s.calendarEvents },
+      { group:'Calendar & venues', id:'calendar-variety', title:'Calendar variety', description:'Use four different calendar entry types.', icon:'palette', series:6, target:4, value:s=>s.calendarTypes },
+      { group:'Calendar & venues', id:'ceremony-location', title:'Ceremony location found', description:'Save your ceremony venue.', icon:'map-pin-check', series:2, target:1, value:s=>s.ceremonyVenueSet ? 1 : 0 },
+      { group:'Calendar & venues', id:'ceremony-ready', title:'Ceremony ready', description:'Save the ceremony venue, address and time.', icon:'church', series:2, target:1, value:s=>s.ceremonyReady ? 1 : 0 },
+      { group:'Calendar & venues', id:'reception-location', title:'Reception location found', description:'Save your reception venue.', icon:'map-pinned', series:6, target:1, value:s=>s.receptionVenueSet ? 1 : 0 },
+      { group:'Calendar & venues', id:'reception-ready', title:'Reception ready', description:'Save the reception venue, address and time.', icon:'glass-water', series:6, target:1, value:s=>s.receptionReady ? 1 : 0 },
+      { group:'Calendar & venues', id:'both-venues-ready', title:'Two perfect places', description:'Complete both ceremony and reception details.', icon:'map', series:3, target:2, value:s=>Number(s.ceremonyReady)+Number(s.receptionReady) },
+      { group:'Calendar & venues', id:'timeline-three', title:'Run of show', description:'Add three ceremony or reception timeline items.', icon:'list-ordered', series:1, target:3, value:s=>s.timelineItems },
+      { group:'Calendar & venues', id:'timeline-eight', title:'Minute-by-minute magic', description:'Add eight ceremony or reception timeline items.', icon:'clock-3', series:4, target:8, value:s=>s.timelineItems },
+
+      { group:'Seating & supplies', id:'first-furniture', title:'Room takes shape', description:'Add your first item to the seating plan.', icon:'layout-template', series:3, target:1, value:s=>s.seatingItems },
+      { group:'Seating & supplies', id:'ten-chairs', title:'Chairs are ready', description:'Place ten chairs on the floor plan.', icon:'armchair', series:1, target:10, value:s=>s.seatingChairs },
+      { group:'Seating & supplies', id:'first-seat', title:'First seat assigned', description:'Assign your first guest to a chair.', icon:'user-check', series:4, target:1, value:s=>s.assignedSeats },
+      { group:'Seating & supplies', id:'seating-star', title:'Seating star', description:'Assign ten guests to chairs.', icon:'armchair', series:4, target:10, value:s=>s.assignedSeats },
+      { group:'Seating & supplies', id:'seating-twenty-five', title:'Table harmony', description:'Assign twenty-five guests to chairs.', icon:'users', series:2, target:25, value:s=>s.assignedSeats },
+      { group:'Seating & supplies', id:'seating-fifty', title:'Grand seating plan', description:'Assign fifty guests to chairs.', icon:'crown', series:6, target:50, value:s=>s.assignedSeats },
+      { group:'Seating & supplies', id:'everyone-seated', title:'Everyone has a seat', description:'Seat every name in the seating guest list.', icon:'circle-check-big', series:1, target:1, value:s=>s.fullySeated ? 1 : 0 },
+      { group:'Seating & supplies', id:'first-supply', title:'First supply tracked', description:'Add your first supply item.', icon:'package-plus', series:5, target:1, value:s=>s.supplies },
+      { group:'Seating & supplies', id:'supply-ten', title:'Detail inventory', description:'Track ten supply items.', icon:'package-search', series:3, target:10, value:s=>s.supplies },
+      { group:'Seating & supplies', id:'first-purchase', title:'First purchase', description:'Mark your first supply as purchased.', icon:'shopping-bag', series:6, target:1, value:s=>s.purchasedSupplies },
+      { group:'Seating & supplies', id:'detail-lover', title:'Detail lover', description:'Mark five supplies as purchased.', icon:'package-check', series:1, target:5, value:s=>s.purchasedSupplies },
+      { group:'Seating & supplies', id:'purchase-ten', title:'Supply champion', description:'Mark ten supplies as purchased.', icon:'badge-check', series:4, target:10, value:s=>s.purchasedSupplies },
+      { group:'Seating & supplies', id:'all-supplies-ready', title:'Every detail ready', description:'Purchase every tracked supply item.', icon:'sparkles', series:2, target:1, value:s=>s.allSuppliesPurchased ? 1 : 0 },
+
+      { group:'Data safety', id:'manual-save', title:'Safe and sound', description:'Use Save to protect your latest work.', icon:'save', series:1, target:1, value:s=>s.manualSaves },
+      { group:'Data safety', id:'save-habit', title:'Save habit', description:'Use Save three times.', icon:'shield-check', series:3, target:3, value:s=>s.manualSaves },
+      { group:'Data safety', id:'first-backup', title:'Backup hero', description:'Download your first JSON backup.', icon:'download', series:5, target:1, value:s=>s.exports },
+      { group:'Data safety', id:'backup-trio', title:'Triple protected', description:'Download three JSON backups.', icon:'archive', series:4, target:3, value:s=>s.exports },
+      { group:'Data safety', id:'import-explorer', title:'Plan traveller', description:'Import a wedding plan backup.', icon:'upload', series:2, target:1, value:s=>s.imports },
+      { group:'Data safety', id:'recovery-time-traveller', title:'Time traveller', description:'Restore a recovery snapshot.', icon:'history', series:6, target:1, value:s=>s.restores }
+    ];
+    const catalog = Array.isArray(globalThis.WEDDING_ACHIEVEMENT_CATALOG)
+      ? new Map(globalThis.WEDDING_ACHIEVEMENT_CATALOG.map(item => [item.id, item]))
+      : new Map();
+    return definitions.map(definition => {
+      const override = catalog.get(definition.id);
+      return override ? { ...definition, ...override, value: definition.value } : definition;
+    });
+  }
+
+  function rewardXpBreakdown(stats, unlockedCount = state.rewards?.unlocked?.length || 0) {
+    return [
+      { label:'Wedding journey', icon:'calendar-heart', series:2, xp:Number(stats.weddingDateSet) * 40 + Number(stats.websiteSet) * 40 + Number(stats.customEventName) * 20 },
+      { label:'Checklist', icon:'list-checks', series:1, xp:stats.checklistTasks * 4 + stats.completedTasks * 30 },
+      { label:'Budget', icon:'wallet-cards', series:5, xp:(stats.totalBudget > 0 ? 40 : 0) + stats.budgetItems * 15 + stats.budgetMoneyRows * 20 + stats.paymentCount * 25 },
+      { label:'Guests', icon:'users', series:2, xp:stats.guests * 8 + stats.invitationsSent * 5 + stats.rsvpAnswered * 8 + stats.drinkChoices * 3 + (stats.plusOnesLinked + stats.childrenLinked) * 10 },
+      { label:'Vendors', icon:'store', series:3, xp:stats.vendors * 20 + stats.vendorsBooked * 15 + stats.vendorsContracted * 15 },
+      { label:'Calendar & venues', icon:'calendar-heart', series:6, xp:stats.calendarEvents * 12 + stats.ceremonyFields * 10 + stats.receptionFields * 10 + stats.timelineItems * 8 },
+      { label:'Seating & supplies', icon:'armchair', series:4, xp:stats.seatingItems * 2 + stats.assignedSeats * 5 + stats.supplies * 4 + stats.purchasedSupplies * 12 },
+      { label:'Data safety', icon:'shield-check', series:5, xp:Math.min(stats.manualSaves,5) * 5 + Math.min(stats.exports,5) * 10 + Math.min(stats.imports,3) * 15 + Math.min(stats.restores,3) * 15 },
+      { label:'Achievement bonuses', icon:'trophy', series:4, xp:unlockedCount * 75 }
+    ];
+  }
+
+  function rewardLevel(xp = state.rewards?.xp || 0) {
+    const points = Math.max(0, Number(xp) || 0);
+    const level = Math.floor(points / 250) + 1;
+    const floor = (level - 1) * 250;
+    const ceiling = level * 250;
+    return { level, floor, ceiling, progress:Math.round((points - floor) / (ceiling - floor) * 100) };
+  }
+
+  function syncRewards(announce = true) {
+    const stats = rewardStats();
+    const definitions = achievementDefinitions();
+    const previous = Array.isArray(state.rewards?.unlocked) ? state.rewards.unlocked : [];
+    const unlockedIds = new Set(previous.map(item => item.id));
+    const newlyUnlocked = definitions.filter(definition => definition.value(stats) >= definition.target && !unlockedIds.has(definition.id));
+    const now = new Date().toISOString();
+    const unlocked = [...previous, ...newlyUnlocked.map(definition => ({ id:definition.id, unlockedAt:now }))];
+    const oldXp = Math.max(0, Number(state.rewards?.xp) || 0);
+    const calculatedXp = rewardXpBreakdown(stats, unlocked.length).reduce((sum,item) => sum + item.xp, 0);
+    const xp = Math.max(oldXp, calculatedXp);
+    const oldLevel = rewardLevel(oldXp).level;
+    const newLevel = rewardLevel(xp).level;
+    state.rewards = { xp, unlocked, actions:{ ...(state.rewards?.actions || {}) } };
+    if (announce && (newlyUnlocked.length || newLevel > oldLevel)) {
+      const title = newLevel > oldLevel ? `Level ${newLevel} unlocked!` : 'Achievement unlocked!';
+      const detail = newlyUnlocked.length
+        ? `${newlyUnlocked[0].title}${newlyUnlocked.length > 1 ? ` + ${newlyUnlocked.length - 1} more` : ''} · +${newlyUnlocked.length * 75} XP`
+        : `Your planning progress reached ${xp} XP.`;
+      ui.rewardToast = { title, detail };
+    }
+  }
+
+  function incrementRewardAction(key) {
+    if (!state.rewards?.actions) state.rewards = { ...(state.rewards || {}), actions:{ manualSaves:0, exports:0, imports:0, restores:0 } };
+    state.rewards.actions[key] = Math.max(0, Number(state.rewards.actions[key]) || 0) + 1;
+  }
+
+  function daysUntil() {
+    if (!state.meta.weddingDate) return null;
+    const target = new Date(`${state.meta.weddingDate}T12:00:00`);
+    const today = new Date(); today.setHours(12,0,0,0);
+    return Math.ceil((target - today) / 86400000);
+  }
+
+  function renderNav() {
+    const level = rewardLevel().level;
+    nav.innerHTML = navItems.map(([id, icon, label]) => `<button class="btn btn-ghost btn-block" type="button" data-section="${id}" aria-pressed="${ui.section === id}"><i data-lucide="${icon}" aria-hidden="true"></i>${label}${id === 'rewards' ? `<span class="viz-badge">Lv ${level}</span>` : ''}</button>`).join('');
+  }
+
+  function statCard(label, value, context = '') {
+    return `<div class="card viz-stat"><span class="text-muted">${esc(label)}</span><span class="viz-stat-value metric-number">${esc(value)}</span>${context ? `<span class="text-small text-muted">${esc(context)}</span>` : ''}</div>`;
+  }
+
+  function sectionHead(title, intro, action = '') {
+    return `<div class="section-head"><div class="section-copy"><h2>${esc(title)}</h2><p class="text-muted">${esc(intro)}</p></div>${action}</div>`;
+  }
+
+  function renderRecoveryPanel() {
+    const snapshots = readRecoverySnapshots();
+    const newest = snapshots[0];
+    return `<section class="card recovery-panel" data-recovery-panel>
+      <div class="recovery-copy"><span class="recovery-icon" aria-hidden="true"><i data-lucide="shield-check"></i></span><div><h3>Automatic data protection</h3><p class="text-muted">Every confirmed change is saved in this browser and copied into rotating recovery snapshots. Download a backup before moving the app to another browser, device or folder.</p><p class="text-small text-muted">${newest ? `Latest recovery point: ${esc(recoveryTimeLabel(newest.timestamp))} · ${esc(newest.reason)}` : 'Your first recovery point will be created automatically.'}</p></div></div>
+      <div class="recovery-actions"><label class="form-label">Recovery history<select class="form-select" id="recovery-snapshot-select" ${snapshots.length ? '' : 'disabled'}>${snapshots.map(item => `<option value="${esc(item.id)}">${esc(recoveryTimeLabel(item.timestamp))} · ${esc(item.reason)}</option>`).join('')}</select></label><div class="viz-row"><button class="btn" type="button" data-action="restore-recovery" ${snapshots.length ? '' : 'disabled'}><i data-lucide="history" aria-hidden="true"></i>Restore selected</button><button class="btn btn-primary" type="button" data-action="export"><i data-lucide="download" aria-hidden="true"></i>Download backup</button></div></div>
+    </section>`;
+  }
+
+  function refreshRecoveryPanel() {
+    const current = root.querySelector('[data-recovery-panel]');
+    if (!current) return;
+    current.outerHTML = renderRecoveryPanel();
+    globalThis.lucide?.createIcons({ attrs: { width:16, height:16 } });
+  }
+
+  function achievementProgress(definition, stats) {
+    const value = Math.max(0, Number(definition.value(stats)) || 0);
+    return { value, pct:Math.min(100, Math.round(value / definition.target * 100)) };
+  }
+
+  function renderLevelCard() {
+    const xp = Math.max(0, Number(state.rewards?.xp) || 0);
+    const level = rewardLevel(xp);
+    const unlocked = state.rewards?.unlocked?.length || 0;
+    const stats = rewardStats();
+    return `<section class="card level-card" aria-label="Reward level ${level.level}, ${xp} experience points">
+      <div class="level-orb" style="--level-progress:${level.progress}%"><div class="level-orb-content"><span class="text-small">LEVEL</span><h2 class="level-number">${level.level}</h2></div></div>
+      <div class="level-copy">
+        <div class="level-title-row"><div><p class="passport-kicker text-small">WEDDING JOURNEY</p><h3>${level.level < 4 ? 'Planning explorer' : level.level < 8 ? 'Wedding navigator' : level.level < 12 ? 'Celebration captain' : 'Legendary planner'}</h3></div><span class="viz-badge"><i data-lucide="zap" aria-hidden="true"></i>${xp} XP</span></div>
+        <p class="text-muted">Every completed plan moves your wedding journey forward.</p>
+        <div class="progress-track" role="progressbar" aria-label="Progress to level ${level.level + 1}" aria-valuemin="${level.floor}" aria-valuemax="${level.ceiling}" aria-valuenow="${xp}"><div class="progress-fill" style="width:${level.progress}%"></div></div>
+        <p class="text-small text-muted">${level.ceiling - xp} XP to level ${level.level + 1}</p>
+        <div class="reward-mini-stats"><div class="reward-mini-stat"><span class="text-small text-muted">Badges</span><p class="metric-number">${unlocked} / ${achievementDefinitions().length}</p></div><div class="reward-mini-stat"><span class="text-small text-muted">Tasks completed</span><p class="metric-number">${stats.completedTasks}</p></div><div class="reward-mini-stat"><span class="text-small text-muted">Planning areas</span><p class="metric-number">${stats.coverage} / 9</p></div></div>
+      </div>
+    </section>`;
+  }
+
+  function renderUpcomingRewards(limit = 3) {
+    const stats = rewardStats();
+    const unlockedIds = new Set((state.rewards?.unlocked || []).map(item => item.id));
+    const upcoming = achievementDefinitions().filter(item => !unlockedIds.has(item.id)).sort((a,b) => achievementProgress(b,stats).pct - achievementProgress(a,stats).pct).slice(0,limit);
+    return `<section class="card"><div class="card-heading"><h3>Next achievements</h3><span class="text-small text-muted">+75 XP each</span></div><div class="reward-list">${upcoming.length ? upcoming.map(definition => {
+      const progress = achievementProgress(definition, stats);
+      return `<div class="reward-row" data-reward-series="${definition.series}"><span class="reward-icon"><i data-lucide="${definition.icon}" aria-hidden="true"></i></span><div class="reward-row-main"><div class="level-title-row"><p class="item-title">${esc(definition.title)}</p><span class="text-small metric-number">${Math.min(progress.value,definition.target)} / ${definition.target}</span></div><div class="progress-track reward-progress"><div class="progress-fill" style="width:${progress.pct}%"></div></div></div></div>`;
+    }).join('') : `<div class="reward-row" data-reward-series="4"><span class="reward-icon"><i data-lucide="crown" aria-hidden="true"></i></span><div class="reward-row-main"><p class="item-title">All achievements unlocked</p><p class="text-small text-muted">You are a legendary wedding planner.</p></div></div>`}</div></section>`;
+  }
+
+  function renderRewardSnapshot() {
+    return `<div class="reward-overview">${renderLevelCard()}${renderUpcomingRewards()}</div>`;
+  }
+
+  function renderRewards() {
+    const stats = rewardStats();
+    const definitions = achievementDefinitions();
+    const unlockedMap = new Map((state.rewards?.unlocked || []).map(item => [item.id,item]));
+    const earnedBreakdown = rewardXpBreakdown(stats, unlockedMap.size);
+    const accountedXp = earnedBreakdown.reduce((sum,item) => sum + item.xp, 0);
+    const retainedXp = Math.max(0, (state.rewards?.xp || 0) - accountedXp);
+    const breakdown = retainedXp ? [...earnedBreakdown, { label:'Progress retained', icon:'history', series:3, xp:retainedXp }] : earnedBreakdown;
+    const achievementGroups = [...new Set(definitions.map(item => item.group))];
+    return `<div class="section-stack">
+      ${sectionHead('Rewards & achievements', 'Earn XP and badges naturally while you plan. Your reward progress is saved with the rest of your wedding data.', `<span class="viz-badge"><i data-lucide="trophy" aria-hidden="true"></i>${unlockedMap.size} badges</span>`)}
+      ${renderLevelCard()}
+      <div class="reward-overview">
+        ${renderUpcomingRewards(5)}
+        <section class="card"><div class="card-heading"><h3>XP breakdown</h3><span class="text-small text-muted">Lifetime points</span></div><div class="reward-list">${breakdown.map(item => `<div class="reward-row" data-reward-series="${item.series}"><span class="reward-icon"><i data-lucide="${item.icon}" aria-hidden="true"></i></span><div class="reward-row-main"><p class="item-title">${esc(item.label)}</p></div><span class="metric-number">+${item.xp} XP</span></div>`).join('')}</div></section>
+      </div>
+      <div class="achievement-groups">${achievementGroups.map(group => {
+        const groupItems = definitions.filter(item => item.group === group);
+        const groupUnlocked = groupItems.filter(item => unlockedMap.has(item.id)).length;
+        return `<section class="card"><div class="card-heading"><h3>${esc(group)}</h3><span class="text-small text-muted">${groupUnlocked} / ${groupItems.length} unlocked</span></div><div class="achievement-list">${groupItems.map(definition => {
+          const unlocked = unlockedMap.get(definition.id);
+          const progress = achievementProgress(definition,stats);
+          return `<div class="achievement-row ${unlocked ? 'is-unlocked' : 'is-locked'}" data-reward-series="${definition.series}"><span class="achievement-icon"><i data-lucide="${unlocked ? definition.icon : 'lock-keyhole'}" aria-hidden="true"></i></span><div class="achievement-copy"><p class="item-title">${esc(definition.title)}</p><p class="text-small text-muted">${esc(definition.description)}</p><div class="progress-track reward-progress"><div class="progress-fill" style="width:${progress.pct}%"></div></div></div><span class="viz-badge">${unlocked ? 'Unlocked' : `${Math.min(progress.value,definition.target)} / ${definition.target}`}</span></div>`;
+        }).join('')}</div></section>`;
+      }).join('')}</div>
+    </div>`;
+  }
+
+  function passportHero() {
+    const days = daysUntil();
+    const destination = state.reception.venue || state.ceremony.venue || 'Destination not set';
+    const travelDate = state.meta.weddingDate ? dateLabel(state.meta.weddingDate) : 'Date not set';
+    const countdown = days === null ? 'Departure date not set' : days < 0 ? 'The journey has begun' : days === 0 ? 'Boarding now!' : `${days} days to departure`;
+    const passportNumber = state.meta.weddingDate ? state.meta.weddingDate.replaceAll('-', '') : 'DATE-TBC';
+    return `<section class="card passport-hero" aria-label="Wedding passport">
+      <div class="passport-main">
+        <p class="passport-kicker text-small">TRAVEL DOCUMENT · WEDDING EDITION</p>
+        <div class="passport-title-row">
+          <div><h3>Passport to our wedding</h3><p class="text-muted">One shared journey, every plan in one passport.</p></div>
+          <div class="visa-stamp" aria-label="Love approved"><i data-lucide="heart" aria-hidden="true"></i><span class="text-small">LOVE<br>APPROVED</span></div>
+        </div>
+        <div class="passport-details">
+          <div class="passport-field"><span class="passport-kicker text-small">TRAVELLERS</span><p>${esc(state.meta.eventName || 'Our Wedding')}</p></div>
+          <div class="passport-field"><span class="passport-kicker text-small">DEPARTURE</span><p>${esc(travelDate)}</p></div>
+          <div class="passport-field"><span class="passport-kicker text-small">DESTINATION</span><p>${esc(destination)}</p></div>
+        </div>
+        <form class="viz-row quick-task-bar" data-form="quick-task"><i data-lucide="sparkles" aria-hidden="true"></i><label class="sr-only" for="quick-task-input">Quick-add a task</label><input class="form-control" id="quick-task-input" name="text" placeholder="What still needs doing?" required><button class="btn btn-primary" type="submit">Add task</button></form>
+      </div>
+      <div class="passport-side">
+        <p class="passport-kicker text-small">BOARDING PASS</p>
+        <div class="route-line" aria-label="Route from home to love"><span>HOME</span><i data-lucide="plane" aria-hidden="true"></i><span>LOVE</span></div>
+        <p class="travel-countdown">${esc(countdown)}</p>
+        <div class="barcode" aria-hidden="true"></div>
+        <p class="passport-number text-small">FIN · ${esc(passportNumber)}</p>
+      </div>
+    </section>`;
+  }
+
+  function renderDashboard() {
+    const b = budgetTotals();
+    const budgetLimit = num(state.totalBudget);
+    const c = checklistStats();
+    const days = daysUntil();
+    const nextTasks = [...state.checklist].filter(item => !item.done).sort((a,b) => (a.due || '9999').localeCompare(b.due || '9999')).slice(0,4);
+    const website = safeUrl(state.meta.websiteUrl);
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    return `<div class="section-stack">
+      ${sectionHead(`${greeting} — your wedding dashboard`, 'A little steady progress is plenty. Everything important is right here.')}
+      ${passportHero()}
+      ${renderRewardSnapshot()}
+      ${renderRecoveryPanel()}
+      <div class="viz-grid">
+        ${statCard('Wedding countdown', days === null ? 'Set the date' : days < 0 ? 'Wedding date passed' : days === 0 ? 'Today!' : `${days} days`, state.meta.weddingDate ? dateLabel(state.meta.weddingDate) : 'Add the date in your details')}
+        ${statCard('Checklist', `${c.done} / ${c.total}`, `${c.pct} % complete`)}
+        ${statCard(budgetLimit-b.actual >= 0 ? 'Budget remaining' : 'Over budget', money(Math.abs(budgetLimit-b.actual)), `${money(b.actual)} / ${money(budgetLimit)} spent`)}
+        ${statCard('Unpaid', money(Math.max(0, b.actual - b.paid)), `${money(b.paid)} paid`)}
+      </div>
+      <div class="dashboard-grid">
+        <section class="card">
+          <div class="card-heading"><h3>Up next</h3><button class="btn btn-ghost" type="button" data-section="checklist">All</button></div>
+          ${nextTasks.length ? nextTasks.map(task => `<div class="check-row"><div class="check-main"><span aria-hidden="true">○</span><div><p class="item-title">${esc(task.text)}</p><p class="text-small text-muted">${esc(task.category)}</p></div></div><span class="check-date text-small text-muted">${task.due ? dateLabel(task.due) : 'No due date'}</span><span></span></div>`).join('') : empty('Everything is done!')}
+        </section>
+        <section class="card">
+          <div class="card-heading"><h3>Wedding website</h3></div>
+          ${website ? `<a class="website-link" href="${esc(website)}" target="_blank" rel="noopener"><i data-lucide="external-link" aria-hidden="true"></i>${esc(state.meta.websiteUrl)}</a>` : `<p class="text-muted">Add your wedding website below.</p>`}
+          <form class="form-grid" data-form="meta" style="margin-top:10px">
+            <label class="form-label">Event name<input class="form-control" name="eventName" value="${esc(state.meta.eventName)}" required></label>
+            <label class="form-label">Wedding date<input class="form-control" name="weddingDate" type="date" value="${esc(state.meta.weddingDate)}"></label>
+            <label class="form-label span-2">Wedding website link<input class="form-control" name="websiteUrl" type="url" placeholder="https://..." value="${esc(state.meta.websiteUrl)}"></label>
+            <div class="form-actions"><button class="btn btn-primary" type="submit">Save details</button></div>
+          </form>
+        </section>
+        <section class="card wide">
+          <div class="card-heading"><h3>Checklist progress</h3><span class="metric-number">${c.pct} %</span></div>
+          <div class="progress-track" role="progressbar" aria-label="Checklist progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${c.pct}"><div class="progress-fill" style="width:${c.pct}%"></div></div>
+        </section>
+      </div>
+    </div>`;
+  }
+
+  function renderChecklist() {
+    const c = checklistStats();
+    const groups = [...new Set(state.checklist.map(item => item.category))];
+    return `<div class="section-stack">
+      ${sectionHead('Checklist', 'Keep tasks, owners and deadlines organised.', `<span class="viz-badge">${c.pct} % complete</span>`)}
+      <section class="card">
+        <form class="form-grid" data-form="checklist">
+          <label class="form-label span-2">New task<input class="form-control" name="text" placeholder="e.g. confirm the flower order" required></label>
+          <label class="form-label">Category<input class="form-control" name="category" list="check-categories" placeholder="e.g. Decor" required><datalist id="check-categories">${groups.map(g => `<option value="${esc(g)}">`).join('')}</datalist></label>
+          <label class="form-label">Due date<input class="form-control" name="due" type="date"></label>
+          <div class="form-actions"><button class="btn btn-primary" type="submit"><i data-lucide="plus" aria-hidden="true"></i>Add task</button></div>
+        </form>
+      </section>
+      <section class="card">
+        <div class="card-heading"><h3>Tasks</h3><span class="text-small text-muted">${c.done} / ${c.total} done</span></div>
+        ${state.checklist.length ? state.checklist.map(item => `<div class="check-row ${item.done ? 'completed' : ''}"><div class="check-main"><label class="form-check"><input class="form-check-input" type="checkbox" data-check-id="${item.id}" ${item.done ? 'checked' : ''}><span class="form-check-label sr-only">Mark complete: ${esc(item.text)}</span></label><div><p class="item-title">${esc(item.text)}</p><p class="text-small text-muted">${esc(item.category)}</p></div></div><span class="check-date text-small text-muted">${item.due ? dateLabel(item.due) : 'No due date'}</span><button class="btn btn-ghost" type="button" data-delete-check="${item.id}" aria-label="Delete ${esc(item.text)}"><i data-lucide="trash-2" aria-hidden="true"></i></button></div>`).join('') : empty('Add your first task.')}
+      </section>
+    </div>`;
+  }
+
+  function renderCalendar() {
+    const fallbackDate = state.meta.weddingDate || todayIso();
+    const cursor = ui.calendarCursor || fallbackDate.slice(0,7);
+    const selectedDate = ui.selectedCalendarDate || fallbackDate;
+    const [year,month] = cursor.split('-').map(Number);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const firstWeekday = (new Date(year, month-1, 1).getDay() + 6) % 7;
+    const cells = Array.from({ length:firstWeekday }, () => '').concat(Array.from({ length:daysInMonth }, (_,index) => `${cursor}-${String(index+1).padStart(2,'0')}`));
+    while (cells.length % 7) cells.push('');
+    const edit = state.calendarEvents.find(item => item.id === ui.editCalendarEvent) || {};
+    const formDate = edit.date || selectedDate;
+    const selectedEvents = state.calendarEvents.filter(item => item.date === selectedDate).sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99') || a.title.localeCompare(b.title));
+    const monthEvents = state.calendarEvents.filter(item => item.date?.startsWith(cursor));
+    const eventCategories = ['Meeting','Due date','Payment','Booking','Wedding day','Other'];
+    const weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const eventSeries = category => Math.max(1, eventCategories.indexOf(category) + 1);
+    return `<div class="section-stack">
+      ${sectionHead('Calendar', 'Keep meetings, deadlines, payments and wedding plans in one calendar.', `<span class="viz-badge">${monthEvents.length} events this month</span>`)}
+      <section class="card calendar-month-card">
+        <div class="viz-row calendar-toolbar"><button class="btn" type="button" data-calendar-shift="-1" aria-label="Previous month"><i data-lucide="chevron-left" aria-hidden="true"></i></button><h3>${esc(monthLabel(cursor))}</h3><div class="viz-row"><button class="btn btn-ghost" type="button" data-calendar-today>Today</button><button class="btn" type="button" data-calendar-shift="1" aria-label="Next month"><i data-lucide="chevron-right" aria-hidden="true"></i></button></div></div>
+        <div class="calendar-grid" style="margin-top:10px">${weekdays.map(day => `<span class="calendar-weekday text-small">${day}</span>`).join('')}${cells.map(date => {
+          if (!date) return '<span class="calendar-spacer" aria-hidden="true"></span>';
+          const events = state.calendarEvents.filter(item => item.date === date).sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+          const accessibleEvents = events.length ? `, ${events.length} entries: ${events.map(item => item.title).join(', ')}` : ', no entries';
+          return `<button class="btn calendar-day ${date === todayIso() ? 'is-today' : ''}" type="button" data-calendar-date="${date}" aria-pressed="${date === selectedDate}" aria-label="${esc(dateLabel(date) + accessibleEvents)}"><span class="calendar-day-top"><span class="calendar-day-number">${Number(date.slice(-2))}</span>${events.length ? `<span class="calendar-entry-indicator text-small" data-event-series="${eventSeries(events[0].category)}" aria-hidden="true"><i data-lucide="flower-2"></i><span>${events.length}</span></span>` : ''}</span><span class="calendar-day-events" aria-hidden="true">${events.slice(0,3).map(item => `<span class="calendar-event-chip text-small" data-event-series="${eventSeries(item.category)}">${esc(item.time ? `${item.time} ${item.title}` : item.title)}</span>`).join('')}${events.length > 3 ? `<span class="calendar-event-chip text-small" data-event-series="3">+${events.length-3} more</span>` : ''}</span></button>`;
+        }).join('')}</div>
+      </section>
+      <div class="calendar-detail-layout">
+        <section class="card">
+          <div class="card-heading"><h3>${edit.id ? 'Edit calendar entry' : 'Add calendar entry'}</h3></div>
+          <form class="form-grid" data-form="calendar-event">
+            <input type="hidden" name="id" value="${esc(edit.id)}">
+            <label class="form-label">Date<input class="form-control" type="date" name="date" value="${esc(formDate)}" required></label>
+            <label class="form-label">Time<input class="form-control" type="time" name="time" value="${esc(edit.time)}"></label>
+            <label class="form-label span-2">Title<input class="form-control" name="title" value="${esc(edit.title)}" placeholder="e.g. meeting with the photographer" required></label>
+            <label class="form-label">Type<select class="form-select" name="category">${options(eventCategories, edit.category || 'Meeting')}</select></label>
+            <label class="form-label">Notes<input class="form-control" name="notes" value="${esc(edit.notes)}" placeholder="Location or extra detail"></label>
+            <div class="form-actions">${edit.id ? '<button class="btn" type="button" data-cancel-edit="calendarEvent">Cancel</button>' : ''}<button class="btn btn-primary" type="submit">${edit.id ? 'Save changes' : 'Add to calendar'}</button></div>
+          </form>
+        </section>
+        <section class="card">
+          <div class="card-heading"><h3>${esc(dateLabel(selectedDate))}</h3><span class="text-small text-muted">${selectedEvents.length} entries</span></div>
+          ${selectedEvents.length ? selectedEvents.map(item => `<article class="calendar-event-row" data-event-series="${eventSeries(item.category)}"><span class="metric-number">${esc(item.time || 'All day')}</span><div><p class="item-title">${esc(item.title)}</p><p class="text-small text-muted">${esc(item.category)}${item.notes ? ` · ${esc(item.notes)}` : ''}</p></div><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-calendar-event="${item.id}"><i data-lucide="pencil" aria-hidden="true"></i>Edit</button><button class="btn btn-ghost" type="button" data-delete-calendar-event="${item.id}"><i data-lucide="trash-2" aria-hidden="true"></i>Delete</button></div></article>`).join('') : empty('No entries for this date yet.')}
+        </section>
+      </div>
+    </div>`;
+  }
+
+  function renderGuests() {
+    const edit = state.guests.find(item => item.id === ui.editGuest) || {};
+    const sent = state.guests.filter(item => item.invitation === 'Sent').length;
+    const attending = state.guests.filter(item => item.rsvp === 'Attending').length;
+    const declined = state.guests.filter(item => item.rsvp === 'Declined').length;
+    const invitationStatuses = ['Not sent','Sent'];
+    const rsvpStatuses = ['Awaiting reply','Attending','Declined'];
+    const drinkStatuses = ['Nothing selected','Alcohol','Alcohol-free'];
+    const companionTypes = ['No link','Plus-one','Child'];
+    const drinkFilters = ['All','Alcohol','Alcohol-free'];
+    const activeDrinkFilter = drinkFilters.includes(ui.guestDrinkFilter) ? ui.guestDrinkFilter : 'All';
+    const sortedGuests = [...state.guests].sort((a,b) => a.name.localeCompare(b.name,'en'));
+    const visibleGuests = activeDrinkFilter === 'All' ? sortedGuests : sortedGuests.filter(guest => (guest.drinkPreference || 'Nothing selected') === activeDrinkFilter);
+    const drinkCount = status => state.guests.filter(guest => (guest.drinkPreference || 'Nothing selected') === status).length;
+    const linkableGuests = sortedGuests.filter(guest => guest.id !== edit.id);
+    const relationText = guest => {
+      const relations = [];
+      const linkedGuest = state.guests.find(item => item.id === guest.linkedGuestId);
+      if (linkedGuest && guest.companionType === 'Plus-one') relations.push(`Plus-one: ${linkedGuest.name}`);
+      if (linkedGuest && guest.companionType === 'Child') relations.push(`Child · adult: ${linkedGuest.name}`);
+      state.guests.filter(item => item.id !== guest.id && item.linkedGuestId === guest.id).forEach(item => {
+        relations.push(item.companionType === 'Child' ? `Child: ${item.name}` : `Plus-one: ${item.name}`);
+      });
+      return [...new Set(relations)];
+    };
+    return `<div class="section-stack">
+      ${sectionHead('Guest list', 'Add guests and track invitations, RSVPs and drink choices.', `<button class="btn" type="button" data-guests-to-seating><i data-lucide="armchair" aria-hidden="true"></i>Send attending guests to seating plan</button>`)}
+      <div class="viz-grid">
+        ${statCard('Guests', String(state.guests.length), 'All added names')}
+        ${statCard('Invitations sent', String(sent), `${Math.max(0,state.guests.length-sent)} not sent`)}
+        ${statCard('Attending', String(attending), `${declined} declined`)}
+      </div>
+      <section class="card">
+        <div class="card-heading"><h3>${edit.id ? 'Edit guest' : 'Add guest'}</h3></div>
+        <form class="form-grid" data-form="guest">
+          <input type="hidden" name="id" value="${esc(edit.id)}">
+          <label class="form-label">Name<input class="form-control" name="name" value="${esc(edit.name)}" placeholder="First name Last name" required></label>
+          <label class="form-label">Contact<input class="form-control" name="contact" value="${esc(edit.contact)}" placeholder="Phone or email"></label>
+          <label class="form-label">Invitation<select class="form-select" name="invitation">${options(invitationStatuses, edit.invitation || 'Not sent')}</select></label>
+          <label class="form-label">RSVP<select class="form-select" name="rsvp">${options(rsvpStatuses, edit.rsvp || 'Awaiting reply')}</select></label>
+          <label class="form-label">Drink choice<select class="form-select" name="drinkPreference">${options(drinkStatuses, edit.drinkPreference || 'Nothing selected')}</select></label>
+          <label class="form-label">Plus-one / child<select class="form-select" name="companionType">${options(companionTypes, edit.companionType || 'No link')}</select></label>
+          <label class="form-label span-2">Linked guest<select class="form-select" name="linkedGuestId" ${(edit.companionType || 'No link') === 'No link' ? 'disabled' : ''}><option value="">Select a guest</option>${linkableGuests.map(guest => `<option value="${guest.id}" ${guest.id === edit.linkedGuestId ? 'selected' : ''}>${esc(guest.name)}</option>`).join('')}</select><span class="field-help text-small text-muted">Choose whose plus-one or child this guest is.</span></label>
+          <label class="form-label span-2">Notes<input class="form-control" name="notes" value="${esc(edit.notes)}" placeholder="Diet, plus-one or other note"></label>
+          <div class="form-actions">${edit.id ? '<button class="btn" type="button" data-cancel-edit="guest">Cancel</button>' : ''}<button class="btn btn-primary" type="submit">${edit.id ? 'Save changes' : 'Add guest'}</button></div>
+        </form>
+      </section>
+      <section class="card">
+        <div class="card-heading"><h3>Guests</h3><span class="text-small text-muted">${visibleGuests.length} / ${state.guests.length} names</span></div>
+        <div class="viz-row guest-filter-bar"><div><p class="text-small text-muted">Filter by drink choice</p><div class="viz-row" role="group" aria-label="Filter guests by drink choice">${drinkFilters.map(filter => `<button class="btn ${filter === activeDrinkFilter ? 'btn-primary' : 'btn-ghost'}" type="button" data-guest-drink-filter="${filter}" aria-pressed="${filter === activeDrinkFilter}">${filter} · ${filter === 'All' ? state.guests.length : drinkCount(filter)}</button>`).join('')}</div></div></div>
+        ${visibleGuests.length ? visibleGuests.map(guest => { const relations=relationText(guest); return `<article class="guest-row"><div class="guest-main"><p class="item-title">${esc(guest.name)}</p><p class="text-small text-muted">${esc(guest.contact || 'No contact details')}${guest.notes ? ` · ${esc(guest.notes)}` : ''}</p><div class="guest-relation"><span class="viz-badge">${esc(guest.drinkPreference || 'Nothing selected')}</span>${relations.map(relation => `<span class="text-small">${esc(relation)}</span>`).join('')}</div></div><div class="guest-status-grid"><label class="form-label">Invitation<select class="form-select" data-guest-status="${guest.id}" data-guest-field="invitation" aria-label="Invitation: ${esc(guest.name)}">${options(invitationStatuses, guest.invitation || 'Not sent')}</select></label><label class="form-label">RSVP<select class="form-select" data-guest-status="${guest.id}" data-guest-field="rsvp" aria-label="RSVP: ${esc(guest.name)}">${options(rsvpStatuses, guest.rsvp || 'Awaiting reply')}</select></label><label class="form-label">Drink<select class="form-select" data-guest-status="${guest.id}" data-guest-field="drinkPreference" aria-label="Drink choice: ${esc(guest.name)}">${options(drinkStatuses, guest.drinkPreference || 'Nothing selected')}</select></label></div><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-guest="${guest.id}"><i data-lucide="pencil" aria-hidden="true"></i><span class="sr-only">Edit ${esc(guest.name)}</span></button><button class="btn btn-ghost" type="button" data-delete-guest="${guest.id}"><i data-lucide="trash-2" aria-hidden="true"></i><span class="sr-only">Delete ${esc(guest.name)}</span></button></div></article>`; }).join('') : empty(state.guests.length ? 'No guests match this drink filter.' : 'Add your first guest.')}
+      </section>
+    </div>`;
+  }
+
+  function renderPlace(scope) {
+    const labels = scope === 'ceremony' ? ['Ceremony','Keep the ceremony venue, contact and timeline together.'] : ['Reception','Keep reception details and the celebration timeline together.'];
+    const data = state[scope];
+    const events = state.timeline.filter(item => item.scope === scope).sort((a,b) => a.time.localeCompare(b.time));
+    return `<div class="section-stack">
+      ${sectionHead(labels[0], labels[1])}
+      <div class="content-split">
+        <section class="card">
+          <div class="card-heading"><h3>Venue details</h3></div>
+          <form class="form-grid" data-form="place" data-scope="${scope}">
+            <label class="form-label">Venue<input class="form-control" name="venue" value="${esc(data.venue)}" placeholder="Venue name"></label>
+            <label class="form-label">Time<input class="form-control" name="time" type="time" value="${esc(data.time)}"></label>
+            <label class="form-label span-2">Address<input class="form-control" name="address" value="${esc(data.address)}" placeholder="Street address, city"></label>
+            <label class="form-label span-2">Contact person<input class="form-control" name="contact" value="${esc(data.contact)}" placeholder="Name, phone or email"></label>
+            <label class="form-label span-2">Notes<textarea class="form-control" name="notes" rows="4" placeholder="Instructions, wishes and special notes...">${esc(data.notes)}</textarea></label>
+            <div class="form-actions"><button class="btn btn-primary" type="submit">Save details</button></div>
+          </form>
+        </section>
+        <section class="card">
+          <div class="card-heading"><h3>Timeline</h3></div>
+          <form class="form-grid" data-form="timeline" data-scope="${scope}">
+            <label class="form-label">Time<input class="form-control" type="time" name="time" required></label>
+            <label class="form-label">Timeline item<input class="form-control" name="title" placeholder="e.g. ceremony begins" required></label>
+            <div class="form-actions"><button class="btn" type="submit"><i data-lucide="plus" aria-hidden="true"></i>Add</button></div>
+          </form>
+          <div class="timeline-list" style="margin-top:10px">${events.length ? events.map(item => `<div class="timeline-row"><span class="metric-number">${esc(item.time)}</span><span>${esc(item.title)}</span><div class="item-actions"><button class="btn btn-ghost" type="button" data-delete-timeline="${item.id}" aria-label="Delete ${esc(item.title)}"><i data-lucide="trash-2" aria-hidden="true"></i></button></div></div>`).join('') : empty('Add the first timeline item.')}</div>
+        </section>
+      </div>
+    </div>`;
+  }
+
+  function renderVendors() {
+    const edit = state.vendors.find(item => item.id === ui.editVendor) || {};
+    return `<div class="section-stack">
+      ${sectionHead('Vendors', 'Keep quotes, contacts, contracts and payments in one list.')}
+      <section class="card">
+        <div class="card-heading"><h3>${edit.id ? 'Edit vendor' : 'Add vendor'}</h3></div>
+        <form class="form-grid" data-form="vendor">
+          <input type="hidden" name="id" value="${esc(edit.id)}">
+          <label class="form-label">Type<input class="form-control" name="type" value="${esc(edit.type)}" placeholder="e.g. Photographer" required></label>
+          <label class="form-label">Name<input class="form-control" name="name" value="${esc(edit.name)}" placeholder="Company or person" required></label>
+          <label class="form-label span-2">Contact details<input class="form-control" name="contact" value="${esc(edit.contact)}" placeholder="Email, phone or link"></label>
+          <label class="form-label">Contract value €<input class="form-control" name="total" type="number" min="0" step="0.01" value="${esc(edit.total ?? '')}"></label>
+          <label class="form-label">Paid €<input class="form-control" name="deposit" type="number" min="0" step="0.01" value="${esc(edit.deposit ?? '')}"></label>
+          <label class="form-label">Status<select class="form-select" name="status">${options(['Considering','Quote requested','Booked','Contract signed','Complete'], edit.status || 'Considering')}</select></label>
+          <label class="form-label">Notes<input class="form-control" name="notes" value="${esc(edit.notes)}"></label>
+          <div class="form-actions">${edit.id ? '<button class="btn" type="button" data-cancel-edit="vendor">Cancel</button>' : ''}<button class="btn btn-primary" type="submit">${edit.id ? 'Save changes' : 'Add vendor'}</button></div>
+        </form>
+      </section>
+      <section class="card">
+        <div class="card-heading"><h3>Vendors</h3><span class="text-small text-muted">${state.vendors.length} total</span></div>
+        ${state.vendors.length ? state.vendors.map(v => `<article class="item-row"><div class="item-main"><i data-lucide="store" aria-hidden="true"></i><div><p class="item-title">${esc(v.name)}</p><p class="text-small text-muted">${esc(v.type)}${v.contact ? ` · ${esc(v.contact)}` : ''}</p></div></div><span><span class="text-small text-muted">Contract</span><br><span class="metric-number">${money(v.total)}</span></span><span><span class="text-small text-muted">Paid</span><br><span class="metric-number">${money(v.deposit)}</span></span><span class="viz-badge">${esc(v.status)}</span><div class="item-actions"><button class="btn btn-ghost" type="button" data-vendor-budget="${v.id}" data-tooltip="Add or update budget item"><i data-lucide="wallet-cards" aria-hidden="true"></i><span class="sr-only">Add to budget</span></button><button class="btn btn-ghost" type="button" data-edit-vendor="${v.id}" aria-label="Edit ${esc(v.name)}"><i data-lucide="pencil" aria-hidden="true"></i></button><button class="btn btn-ghost" type="button" data-delete-vendor="${v.id}" aria-label="Delete ${esc(v.name)}"><i data-lucide="trash-2" aria-hidden="true"></i></button></div></article>`).join('') : empty('Add your first vendor.')}
+      </section>
+    </div>`;
+  }
+
+  function renderSeating() {
+    const plan = state.seatingPlan || freshSeatingPlan();
+    const chairs = plan.items.filter(item => item.type === 'chair');
+    const tables = plan.items.filter(item => ['table','table90','table45','round'].includes(item.type));
+    const assigned = chairs.filter(item => String(item.guest || '').trim()).length;
+    const guestNames = String(plan.guestList || '').split(/\r?\n/).map(name => name.trim()).filter(Boolean);
+    const assignedNames = new Set(chairs.filter(item => String(item.guest || '').trim()).map(item => item.guest.trim().toLowerCase()));
+    const waiting = guestNames.filter(name => !assignedNames.has(name.toLowerCase())).length;
+    return `<div class="section-stack">
+      ${sectionHead('Seating plan', 'Move, rotate and name accurately scaled furniture directly on the floor plan.', `<div class="viz-row"><button class="btn" type="button" id="seat-export"><i data-lucide="download" aria-hidden="true"></i>Export plan</button><button class="btn" type="button" id="seat-import"><i data-lucide="upload" aria-hidden="true"></i>Import plan</button><input class="sr-only" id="seat-import-file" type="file" accept="application/json,.json"></div>`)}
+      <div class="viz-grid"><div class="card viz-stat"><span class="text-muted">Tables</span><span class="viz-stat-value metric-number" id="seat-table-count">${tables.length}</span></div><div class="card viz-stat"><span class="text-muted">Chairs</span><span class="viz-stat-value metric-number" id="seat-chair-count">${chairs.length}</span></div><div class="card viz-stat"><span class="text-muted">Assigned seats</span><span class="viz-stat-value metric-number" id="seat-assigned-count">${assigned}</span></div><div class="card viz-stat"><span class="text-muted">Unseated</span><span class="viz-stat-value metric-number" id="seat-waiting-count">${waiting}</span></div></div>
+      <div class="seating-workspace">
+        <section class="card seating-tools" aria-label="Seating plan tools">
+          <div class="seating-tool-section">
+            <div class="card-heading"><h3>Furniture</h3></div>
+            <label class="form-label">Furniture to add<select class="form-select" id="seat-item-type"><option value="banquet">8-person setting · table 140 × 90</option><option value="table90">Table 140 × 90 × 73 cm</option><option value="table45">Narrow table 140 × 45 × 73 cm</option><option value="chair">Chair 49 × 43 × 77 cm</option><option value="piano">Grand piano 212 × 150 cm</option><option value="buffetLow" id="seat-option-buffet-low">Buffet 150 × 100 × 85 cm · 2 pcs</option><option value="buffetHigh" id="seat-option-buffet-high">Buffet 150 × 100 × 120 cm · 3 pcs</option></select></label>
+            <div class="seating-button-grid"><button class="btn btn-primary" type="button" id="seat-add">Add</button><button class="btn" type="button" id="seat-copy">Duplicate</button><button class="btn" type="button" id="seat-delete">Delete</button><button class="btn btn-ghost" type="button" id="seat-reset">Clear</button></div>
+          </div>
+          <div class="seating-tool-section">
+            <div class="card-heading"><h3>View</h3></div>
+            <label class="form-label"><span class="seating-inline-label">Zoom <output id="seat-zoom-value">100 %</output></span><input class="form-range" id="seat-zoom" type="range" min="0.35" max="4" step="0.01" value="1"></label>
+            <label class="form-label"><span class="seating-inline-label">Map rotation <output id="seat-map-rotation-value">0°</output></span><input class="form-range" id="seat-map-rotation" type="range" min="-180" max="180" step="1" value="0"></label>
+            <label class="form-check"><input class="form-check-input" id="seat-grid" type="checkbox" checked><span class="form-check-label">Show 1 m grid</span></label>
+            <button class="btn" type="button" id="seat-fit">Fit to view</button>
+          </div>
+        </section>
+        <section class="card seating-stage" aria-label="Wedding venue floor plan">
+          <div class="card-heading"><h3>Floor plan</h3><span class="text-small text-muted">Vector plan · accurately scaled furniture</span></div>
+          <div class="seating-canvas-wrap" id="seat-canvas-wrap"><canvas id="seat-plan-canvas" role="img" aria-label="Interactive floor plan with furniture"></canvas><span class="viz-badge seating-status" id="seat-status" role="status">Select furniture</span></div>
+          <p class="text-small text-muted seating-help">Drag furniture on the plan. Drag empty space to pan and use the mouse wheel to zoom.</p>
+        </section>
+        <section class="card seating-inspector" aria-label="Selected furniture and guests">
+          <div class="seating-selected-fields">
+            <div class="card-heading"><h3>Selected furniture</h3><span class="viz-badge" id="seat-selected-type">Nothing selected</span></div>
+            <p class="text-small text-muted" id="seat-selected-detail">–</p>
+            <label class="form-label">Furniture name<input class="form-control" id="seat-item-label" autocomplete="off" placeholder="e.g. Head table"></label>
+            <label class="form-label">Guest name<input class="form-control" id="seat-guest-name" autocomplete="off" placeholder="Select a chair first"></label>
+            <label class="form-label"><span class="seating-inline-label">Furniture rotation <output id="seat-item-rotation-value">0°</output></span><input class="form-range" id="seat-item-rotation" type="range" min="-180" max="180" step="1" value="0"></label>
+            <div class="seating-button-grid"><button class="btn" type="button" id="seat-clear-guest">Clear name</button><button class="btn" type="button" id="seat-next-guest">Next guest</button></div>
+          </div>
+          <div class="seating-guest-fields">
+            <div class="card-heading"><h3>Guest list</h3><span class="viz-badge" id="seat-guest-count">${guestNames.length} names</span></div>
+            <label class="form-label">One name per line<textarea class="form-control" id="seat-guest-list" rows="7" spellcheck="false" placeholder="Aino Esimerkki&#10;Eero Esimerkki">${esc(plan.guestList)}</textarea></label>
+            <button class="btn btn-primary" type="button" id="seat-all-guests">Seat in available chairs</button>
+          </div>
+        </section>
+      </div>
+    </div>`;
+  }
+
+  function renderSupplies() {
+    const edit = state.supplies.find(item => item.id === ui.editSupply) || {};
+    const bought = state.supplies.filter(item => item.status === 'Purchased').length;
+    return `<div class="section-stack">
+      ${sectionHead('Supplies', 'Track purchases, quantities, owners and costs.', `<span class="viz-badge">${bought} / ${state.supplies.length} purchased</span>`)}
+      <section class="card">
+        <form class="form-grid" data-form="supply">
+          <input type="hidden" name="id" value="${esc(edit.id)}">
+          <label class="form-label">Item<input class="form-control" name="item" value="${esc(edit.item)}" placeholder="e.g. table numbers" required></label>
+          <label class="form-label">Quantity<input class="form-control" name="qty" type="number" min="1" value="${esc(edit.qty ?? 1)}" required></label>
+          <label class="form-label">Owner<input class="form-control" name="owner" value="${esc(edit.owner)}" placeholder="Who is responsible?"></label>
+          <label class="form-label">Status<select class="form-select" name="status">${options(['Needed','Ordered','Purchased','Not needed'], edit.status || 'Needed')}</select></label>
+          <label class="form-label">Cost €<input class="form-control" name="cost" type="number" min="0" step="0.01" value="${esc(edit.cost ?? '')}"></label>
+          <label class="form-label">Notes<input class="form-control" name="notes" value="${esc(edit.notes)}"></label>
+          <div class="form-actions">${edit.id ? '<button class="btn" type="button" data-cancel-edit="supply">Cancel</button>' : ''}<button class="btn btn-primary" type="submit">${edit.id ? 'Save changes' : 'Add item'}</button></div>
+        </form>
+      </section>
+      <section class="card">
+        <div class="card-heading"><h3>Supply list</h3><span class="text-small text-muted">Total ${money(state.supplies.reduce((s,i)=>s+num(i.cost),0))}</span></div>
+        ${state.supplies.length ? state.supplies.map(s => `<article class="item-row"><div class="item-main"><i data-lucide="package" aria-hidden="true"></i><div><p class="item-title">${esc(s.item)}</p><p class="text-small text-muted">${esc(s.owner || 'No owner')}${s.notes ? ` · ${esc(s.notes)}` : ''}</p></div></div><span><span class="text-small text-muted">Quantity</span><br>${num(s.qty)}</span><span><span class="text-small text-muted">Cost</span><br>${money(s.cost)}</span><span class="viz-badge">${esc(s.status)}</span><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-supply="${s.id}" aria-label="Edit ${esc(s.item)}"><i data-lucide="pencil" aria-hidden="true"></i></button><button class="btn btn-ghost" type="button" data-delete-supply="${s.id}" aria-label="Delete ${esc(s.item)}"><i data-lucide="trash-2" aria-hidden="true"></i></button></div></article>`).join('') : empty('Add your first supply item.')}
+      </section>
+    </div>`;
+  }
+
+  function categoryTotals() {
+    const map = new Map(state.budgetCategories.map(category => [category, { category, planned:0, actual:0, paid:0, items:[] }]));
+    state.budget.forEach(row => {
+      if (!map.has(row.category)) map.set(row.category, { category: row.category, planned:0, actual:0, paid:0, items:[] });
+      const item = map.get(row.category); item.planned += num(row.planned); item.actual += num(row.actual); item.paid += num(row.paid); item.items.push(row);
+    });
+    return [...map.values()];
+  }
+
+  function donutSvg(categories) {
+    const total = categories.reduce((s,c) => s + num(c.actual), 0);
+    if (!total) return `<svg class="donut" viewBox="0 0 42 42" role="img" aria-labelledby="budget-chart-title budget-chart-desc"><title id="budget-chart-title">Actual spend by category</title><desc id="budget-chart-desc">No actual expenses have been added yet.</desc><circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--muted)" stroke-width="6"></circle><text x="21" y="22.5" text-anchor="middle">0 €</text></svg>`;
+    let offset = 25;
+    const circles = categories.map((c,i) => {
+      if (c.actual <= 0) return '';
+      const pct = c.actual / total * 100;
+      const circle = `<circle cx="21" cy="21" r="15.9" fill="none" stroke="${colors[i % colors.length]}" stroke-width="6" stroke-dasharray="${pct} ${100-pct}" stroke-dashoffset="${offset}" transform="rotate(-90 21 21)"></circle>`;
+      offset -= pct; return circle;
+    }).join('');
+    const desc = categories.filter(c=>c.actual>0).map(c=>`${c.category} ${money(c.actual)}`).join(', ');
+    return `<svg class="donut" viewBox="0 0 42 42" role="img" aria-labelledby="budget-chart-title budget-chart-desc"><title id="budget-chart-title">Actual spend by category</title><desc id="budget-chart-desc">${esc(desc)}</desc><circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--muted)" stroke-width="6"></circle>${circles}<text x="21" y="22.5" text-anchor="middle">${Math.round(total/1000)}k €</text></svg>`;
+  }
+
+  function renderBudget() {
+    const totals = budgetTotals();
+    const budgetLimit = num(state.totalBudget);
+    const categories = categoryTotals();
+    const edit = state.budget.find(row => row.id === ui.editBudget) || {};
+    const editPayment = state.budgetPayments.find(payment => payment.id === ui.editBudgetPayment) || {};
+    const paymentEntries = state.budgetPayments.map(payment => ({ ...payment, expense:state.budget.find(row => row.id === payment.budgetId) })).filter(payment => payment.expense);
+    const payerTotals = new Map();
+    paymentEntries.forEach(payment => payerTotals.set(payment.payer, (payerTotals.get(payment.payer) || 0) + num(payment.amount)));
+    const totalAllocated = paymentEntries.reduce((sum,payment) => sum + num(payment.amount), 0);
+    const unallocatedPaid = Math.max(0, totals.paid - totalAllocated);
+    const defaultPayers = ['Bride','Groom','Joint','Other'];
+    const payerOptions = [...new Set([...defaultPayers, ...payerTotals.keys()])];
+    const payerRole = payer => {
+      const normalized = String(payer || '').toLocaleLowerCase('en');
+      if (normalized.includes('morsian') || normalized.includes('bride')) return 'BRIDE';
+      if (normalized.includes('sulhanen') || normalized.includes('groom')) return 'GROOM';
+      if (normalized.includes('yhteinen') || normalized.includes('joint')) return 'JOINT';
+      return 'OTHER';
+    };
+    const editCategory = state.budgetCategories.find(category => category === ui.editBudgetCategory) || '';
+    const hasCategories = state.budgetCategories.length > 0;
+    const variance = budgetLimit - totals.actual;
+    const allocationVariance = budgetLimit - totals.planned;
+    return `<div class="section-stack">
+      ${sectionHead('Budget', 'Plan costs, record actual spending and track payments. Totals update instantly.', `<button class="btn" type="button" data-action="export"><i data-lucide="download" aria-hidden="true"></i>Download backup</button>`)}
+      <section class="card">
+        <div class="card-heading"><h3>Total wedding budget</h3><span class="text-small text-muted">Used to calculate your remaining budget</span></div>
+        <form class="form-grid" data-form="budget-limit">
+          <label class="form-label span-2">Total budget €<input class="form-control" name="totalBudget" type="number" min="0" step="0.01" value="${esc(budgetLimit)}" required></label>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Save total budget</button></div>
+        </form>
+      </section>
+      <div class="viz-grid">
+        ${statCard('Total budget', money(budgetLimit), 'Set by you')}
+        ${statCard('Allocated', money(totals.planned), allocationVariance >= 0 ? `${money(allocationVariance)} still unallocated` : `${money(Math.abs(allocationVariance))} over the total budget`)}
+        ${statCard('Actual', money(totals.actual), budgetLimit ? `${Math.round(totals.actual/budgetLimit*100)} % of total budget` : 'Set your total budget')}
+        ${statCard(variance >= 0 ? 'Budget remaining' : 'Over budget', money(Math.abs(variance)), `${money(Math.max(0,totals.actual-totals.paid))} unpaid · ${money(totals.paid)} paid`)}
+      </div>
+      <div class="content-split">
+        <section class="card">
+          <div class="card-heading"><h3>Spending by category</h3><span class="text-small text-muted">Actual</span></div>
+          <div class="budget-visual"><div class="donut-wrap">${donutSvg(categories)}</div><div class="category-list">${categories.length ? categories.map((c,i) => `<div class="legend-row"><span class="legend-label"><span class="legend-dot" style="background:${colors[i%colors.length]}"></span><span>${esc(c.category)}</span></span><span class="metric-number">${money(c.actual)}</span></div>`).join('') : empty('No categories.')}</div></div>
+        </section>
+        <section class="card">
+          <div class="card-heading"><h3>${edit.id ? 'Edit subcategory' : 'Add subcategory'}</h3></div>
+          <form class="form-grid" data-form="budget">
+            <input type="hidden" name="id" value="${esc(edit.id)}">
+            <label class="form-label">Main category<select class="form-select" name="category" ${hasCategories ? '' : 'disabled'}>${options(state.budgetCategories, edit.category || state.budgetCategories[0])}</select></label>
+            <label class="form-label">Subcategory<input class="form-control" name="item" value="${esc(edit.item)}" placeholder="e.g. venue hire" required></label>
+            <label class="form-label">Planned €<input class="form-control" name="planned" type="number" min="0" step="0.01" value="${esc(edit.planned ?? 0)}" required></label>
+            <label class="form-label">Actual €<input class="form-control" name="actual" type="number" min="0" step="0.01" value="${esc(edit.actual ?? 0)}"></label>
+            <label class="form-label">Paid €<input class="form-control" name="paid" type="number" min="0" step="0.01" value="${esc(edit.paid ?? 0)}"></label>
+            <label class="form-label">Due date<input class="form-control" name="due" type="date" value="${esc(edit.due)}"></label>
+            <label class="form-label span-2">Notes<input class="form-control" name="notes" value="${esc(edit.notes)}" placeholder="Payment instalment, order number or note..."></label>
+            ${hasCategories ? '' : '<p class="field-help text-small status-warning span-2">Add at least one main category first.</p>'}
+            <div class="form-actions">${edit.id ? '<button class="btn" type="button" data-cancel-edit="budget">Cancel</button>' : ''}<button class="btn btn-primary" type="submit" ${hasCategories ? '' : 'disabled'}>${edit.id ? 'Save changes' : 'Add subcategory'}</button></div>
+          </form>
+        </section>
+      </div>
+      <section class="card">
+        <div class="card-heading"><h3>Main categories and subcategories</h3><span class="text-small text-muted">Planned · actual · paid</span></div>
+        <form class="form-grid budget-category-manager" data-form="budget-category">
+          <input type="hidden" name="originalName" value="${esc(editCategory)}">
+          <label class="form-label span-2">Main category name<input class="form-control" name="categoryName" value="${esc(editCategory)}" placeholder="e.g. Honeymoon" required></label>
+          <div class="form-actions">${editCategory ? '<button class="btn" type="button" data-cancel-edit="budgetCategory">Cancel</button>' : ''}<button class="btn btn-primary" type="submit">${editCategory ? 'Save name' : 'Add main category'}</button></div>
+        </form>
+        <div class="budget-category-tree">${categories.length ? categories.map((c,index) => `<section class="budget-category-group" aria-labelledby="budget-category-${index}"><div class="category-row budget-category-header"><div class="category-main"><p class="item-title" id="budget-category-${index}">${esc(c.category)}</p><p class="text-small text-muted">${c.items.length} subcategories</p></div><span><span class="text-small text-muted">Planned</span><br><span class="metric-number">${money(c.planned)}</span></span><span><span class="text-small text-muted">Actual</span><br><span class="metric-number">${money(c.actual)}</span></span><span><span class="text-small text-muted">Paid</span><br><span class="metric-number">${money(c.paid)}</span></span><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-budget-category="${esc(c.category)}"><i data-lucide="pencil" aria-hidden="true"></i>Rename</button><button class="btn btn-ghost" type="button" data-delete-budget-category="${esc(c.category)}"><i data-lucide="trash-2" aria-hidden="true"></i>Delete category</button></div></div><div class="budget-subcategory-list">${c.items.length ? c.items.map(row => `<article class="item-row budget-subcategory-row"><div class="item-main"><i data-lucide="corner-down-right" aria-hidden="true"></i><div><p class="item-title">${esc(row.item)}</p><p class="text-small text-muted">${row.due ? `Due date ${dateLabel(row.due)}` : 'No due date'}${row.notes ? ` · ${esc(row.notes)}` : ''}</p></div></div><span><span class="text-small text-muted">Planned</span><br><span class="metric-number">${money(row.planned)}</span></span><span><span class="text-small text-muted">Actual</span><br><span class="metric-number">${money(row.actual)}</span></span><span><span class="text-small text-muted">Paid</span><br><span class="metric-number">${money(row.paid)}</span></span><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-budget="${row.id}"><i data-lucide="pencil" aria-hidden="true"></i>Edit</button><button class="btn btn-ghost" type="button" data-delete-budget="${row.id}"><i data-lucide="trash-2" aria-hidden="true"></i>Delete</button></div></article>`).join('') : `<p class="budget-category-empty text-small text-muted">No subcategories.</p>`}</div></section>`).join('') : empty('No main categories. Add your first category above.')}</div>
+      </section>
+      <section class="card">
+        <div class="card-heading"><h3>${editPayment.id ? 'Edit payment share' : 'Who paid what?'}</h3><span class="text-small text-muted">Assign each payment to a person and expense</span></div>
+        <form class="form-grid" data-form="budget-payment">
+          <input type="hidden" name="id" value="${esc(editPayment.id)}">
+          <label class="form-label">Subcategory<select class="form-select" name="budgetId" ${state.budget.length ? '' : 'disabled'}>${state.budget.map(row => `<option value="${row.id}" ${row.id === (editPayment.budgetId || state.budget[0]?.id) ? 'selected' : ''}>${esc(row.category)} · ${esc(row.item)} · ${money(row.paid)} paid</option>`).join('')}</select></label>
+          <label class="form-label">Payer · Bride or Groom?<select class="form-select" name="payer" required>${options(payerOptions, editPayment.payer || 'Bride')}</select></label>
+          <label class="form-label">Amount €<input class="form-control" name="amount" type="number" min="0.01" step="0.01" value="${esc(editPayment.amount ?? '')}" required></label>
+          <label class="form-label">Payment date<input class="form-control" name="date" type="date" value="${esc(editPayment.date || todayIso())}"></label>
+          <label class="form-label span-2">Notes<input class="form-control" name="notes" value="${esc(editPayment.notes)}" placeholder="e.g. first instalment"></label>
+          ${state.budget.length ? '' : '<p class="field-help text-small status-warning span-2">Add at least one budget subcategory first.</p>'}
+          <div class="form-actions">${editPayment.id ? '<button class="btn" type="button" data-cancel-edit="budgetPayment">Cancel</button>' : ''}<button class="btn btn-primary" type="submit" ${state.budget.length ? '' : 'disabled'}>${editPayment.id ? 'Save payment share' : 'Add payment share'}</button></div>
+        </form>
+      </section>
+      <div class="content-split">
+        <section class="card">
+          <div class="card-heading"><h3>Bride / Groom shares</h3><span class="text-small text-muted">${money(totalAllocated)} allocated</span></div>
+          <div class="category-list">${payerOptions.map(payer => { const amount=payerTotals.get(payer)||0; return `<div class="legend-row"><span class="legend-label"><span class="viz-badge">${payerRole(payer)}</span><span>${esc(payer)}</span></span><span><span class="metric-number">${money(amount)}</span><br><span class="text-small text-muted">${totalAllocated ? Math.round(amount/totalAllocated*100) : 0} % of allocated payments</span></span></div>`; }).join('')}${unallocatedPaid > 0 ? `<div class="legend-row"><span class="legend-label"><i data-lucide="circle-help" aria-hidden="true"></i><span>Unallocated paid amount</span></span><span class="metric-number">${money(unallocatedPaid)}</span></div>` : ''}</div>
+        </section>
+        <section class="card">
+          <div class="card-heading"><h3>Payment details</h3><span class="text-small text-muted">${paymentEntries.length} entries</span></div>
+          ${paymentEntries.length ? [...paymentEntries].sort((a,b) => (b.date || '').localeCompare(a.date || '')).map(payment => `<article class="item-row"><div class="item-main"><i data-lucide="receipt-text" aria-hidden="true"></i><div><p class="item-title">${esc(payment.payer)}</p><p class="text-small text-muted">${esc(payment.expense.category)} · ${esc(payment.expense.item)}${payment.notes ? ` · ${esc(payment.notes)}` : ''}</p></div></div><span><span class="text-small text-muted">Share</span><br><span class="metric-number">${money(payment.amount)}</span></span><span><span class="text-small text-muted">Date</span><br>${payment.date ? dateLabel(payment.date) : 'No date'}</span><span class="viz-badge">${payerRole(payment.payer)}</span><div class="item-actions"><button class="btn btn-ghost" type="button" data-edit-budget-payment="${payment.id}"><i data-lucide="pencil" aria-hidden="true"></i><span class="sr-only">Edit ${esc(payment.payer)} payment share</span></button><button class="btn btn-ghost" type="button" data-delete-budget-payment="${payment.id}"><i data-lucide="trash-2" aria-hidden="true"></i><span class="sr-only">Delete ${esc(payment.payer)} payment share</span></button></div></article>`).join('') : empty('No payment shares have been added yet.')}
+        </section>
+      </div>
+    </div>`;
+  }
+
+  function initSeatingCanvas() {
+    const PLAN = { width: 710, height: 540 };
+    const RAD = Math.PI / 180;
+    const seatState = state.seatingPlan || (state.seatingPlan = freshSeatingPlan());
+    const canvas = root.querySelector('#seat-plan-canvas');
+    const wrap = root.querySelector('#seat-canvas-wrap');
+    if (!canvas || !wrap) return () => {};
+    const ctx = canvas.getContext('2d');
+    const get = id => root.querySelector(`#${id}`);
+    const seatUi = {
+      itemType:get('seat-item-type'), add:get('seat-add'), copy:get('seat-copy'), delete:get('seat-delete'), reset:get('seat-reset'),
+      zoom:get('seat-zoom'), zoomValue:get('seat-zoom-value'), mapRotation:get('seat-map-rotation'), mapRotationValue:get('seat-map-rotation-value'),
+      grid:get('seat-grid'), fit:get('seat-fit'), selectedType:get('seat-selected-type'), selectedDetail:get('seat-selected-detail'),
+      itemLabel:get('seat-item-label'), guestName:get('seat-guest-name'), itemRotation:get('seat-item-rotation'), itemRotationValue:get('seat-item-rotation-value'),
+      clearGuest:get('seat-clear-guest'), nextGuest:get('seat-next-guest'), allGuests:get('seat-all-guests'), guestList:get('seat-guest-list'),
+      guestCount:get('seat-guest-count'), tableCount:get('seat-table-count'), chairCount:get('seat-chair-count'), assignedCount:get('seat-assigned-count'),
+      waitingCount:get('seat-waiting-count'), status:get('seat-status'), export:get('seat-export'), import:get('seat-import'), importFile:get('seat-import-file'),
+      optionBuffetLow:get('seat-option-buffet-low'), optionBuffetHigh:get('seat-option-buffet-high')
+    };
+    const presets = {
+      table90:{w:1.4,h:.9,z:.73}, table45:{w:1.4,h:.45,z:.73}, chair:{w:.49,h:.43,z:.77},
+      piano:{w:2.12,h:1.5,z:null}, buffetLow:{w:1.5,h:1,z:.85,limit:2}, buffetHigh:{w:1.5,h:1,z:1.2,limit:3},
+      round:{w:1.5,h:1.5,z:.73}
+    };
+    const labels = { table90:'Table 140 × 90', table45:'Narrow table 140 × 45', round:'Round table', chair:'Chair', piano:'Grand piano', buffetLow:'Buffet 85 cm', buffetHigh:'Buffet 120 cm' };
+    const palette = {
+      stage:'#f5f0ec', ink:'#4a4c45', paper:'#fffdf9', wall:'#697268', detail:'rgba(105,114,104,.30)', sage:'#7e9c82', sageSoft:'rgba(126,156,130,.24)', sageStrong:'rgba(126,156,130,.62)', pink:'#cc8d9e', pinkSoft:'rgba(204,141,158,.26)'
+    };
+    let sequence = 1;
+    let dirty = false;
+    let destroyed = false;
+    let drag = null;
+    const pointers = new Map();
+    const clampValue = (value,min,max) => Math.max(min,Math.min(max,value));
+    const normalizeDegrees = value => { let next=((value+180)%360+360)%360-180; return next===-180?180:next; };
+    const meter = value => value * (Number(seatState.pxPerMeter) || 14.25);
+
+    const normalizeItem = (item,index) => {
+      const migratedType = item.type === 'table' ? 'table90' : item.type === 'buffet' ? 'buffetLow' : item.type;
+      const type = presets[migratedType] ? migratedType : 'table90';
+      const preset = presets[type];
+      return { id:String(item.id || `${type}-${index+1}`), type, x:Number.isFinite(item.x)?item.x:PLAN.width/2, y:Number.isFinite(item.y)?item.y:PLAN.height/2, w:preset.w, h:preset.h, z:Number.isFinite(item.z)?item.z:preset.z, r:Number.isFinite(item.r)?normalizeDegrees(item.r):0, label:typeof item.label==='string'?item.label:'', guest:typeof item.guest==='string'?item.guest:'' };
+    };
+    seatState.items = (Array.isArray(seatState.items) ? seatState.items : []).map(normalizeItem);
+    seatState.view = { x:Number(seatState.view?.x)||0, y:Number(seatState.view?.y)||0, scale:clampValue(Number(seatState.view?.scale)||1,.35,4), rotation:normalizeDegrees(Number(seatState.view?.rotation)||0) };
+    seatState.pxPerMeter = Number(seatState.pxPerMeter) || 14.25;
+    seatState.showGrid = seatState.showGrid !== false;
+    sequence = seatState.items.reduce((max,item) => { const match=item.id.match(/-(\d+)$/); return Math.max(max,match?Number(match[1])+1:max); },1);
+
+    const makeItem = (type,x,y,rotation=0) => ({ id:`${type}-${sequence++}`, type, x, y, w:presets[type].w, h:presets[type].h, z:presets[type].z, r:rotation, label:'', guest:'' });
+    const selectedItem = () => seatState.items.find(item => item.id === seatState.selectedId) || null;
+    const guestNames = () => String(seatState.guestList || '').split(/\r?\n/).map(name=>name.trim()).filter(Boolean);
+    const assignedNames = () => new Set(seatState.items.filter(item=>item.type==='chair'&&String(item.guest||'').trim()).map(item=>item.guest.trim().toLowerCase()));
+    const unassignedNames = () => { const assigned=assignedNames(); return guestNames().filter(name=>!assigned.has(name.toLowerCase())); };
+    const firstEmptyChair = () => seatState.items.find(item=>item.type==='chair'&&!String(item.guest||'').trim()) || null;
+    const countType = type => seatState.items.filter(item=>item.type===type).length;
+    const canAddType = type => !presets[type]?.limit || countType(type) < presets[type].limit;
+    const shortName = value => { const clean=String(value||'').trim(); if(clean.length<=16)return clean; const parts=clean.split(/\s+/); return parts.length>1?`${parts[0]} ${parts[1][0]}.`:`${clean.slice(0,15)}.`; };
+    const dimensionLabel = item => {
+      const footprint=`${Math.round(item.w*100)} × ${Math.round(item.h*100)}`;
+      return Number.isFinite(item.z) ? `${footprint} × ${Math.round(item.z*100)} cm` : `${footprint} cm`;
+    };
+    const persist = message => saveState(message || 'Seating plan saved');
+    const canvasSize = () => ({ width:canvas.clientWidth||wrap.clientWidth||700, height:canvas.clientHeight||wrap.clientHeight||500 });
+    const planToScreen = (x,y) => { const size=canvasSize(), cx=size.width/2, cy=size.height/2, dx=(x-PLAN.width/2)*seatState.view.scale, dy=(y-PLAN.height/2)*seatState.view.scale, angle=seatState.view.rotation*RAD; return {x:cx+seatState.view.x+dx*Math.cos(angle)-dy*Math.sin(angle),y:cy+seatState.view.y+dx*Math.sin(angle)+dy*Math.cos(angle)}; };
+    const screenToPlan = (x,y) => { const size=canvasSize(), cx=size.width/2, cy=size.height/2, angle=seatState.view.rotation*RAD, dx=x-cx-seatState.view.x, dy=y-cy-seatState.view.y; return {x:PLAN.width/2+(dx*Math.cos(angle)+dy*Math.sin(angle))/seatState.view.scale,y:PLAN.height/2+(-dx*Math.sin(angle)+dy*Math.cos(angle))/seatState.view.scale}; };
+    const localToPlan = (item,x,y) => { const angle=item.r*RAD; return {x:item.x+x*Math.cos(angle)-y*Math.sin(angle),y:item.y+x*Math.sin(angle)+y*Math.cos(angle)}; };
+    const planToLocal = (item,point) => { const angle=-item.r*RAD, dx=point.x-item.x, dy=point.y-item.y; return {x:dx*Math.cos(angle)-dy*Math.sin(angle),y:dx*Math.sin(angle)+dy*Math.cos(angle)}; };
+    const viewportCenterPlan = () => { const size=canvasSize(); return screenToPlan(size.width/2,size.height/2); };
+    const roundRect = (context,x,y,width,height,radius) => { const r=Math.min(radius,Math.abs(width)/2,Math.abs(height)/2); context.beginPath(); context.moveTo(x+r,y); context.arcTo(x+width,y,x+width,y+height,r); context.arcTo(x+width,y+height,x,y+height,r); context.arcTo(x,y+height,x,y,r); context.arcTo(x,y,x+width,y,r); context.closePath(); };
+
+    function drawText(textValue,x,y,size) {
+      ctx.save(); ctx.font=`500 ${size}px Arial, sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.lineJoin='round'; ctx.strokeStyle='rgba(255,255,255,.92)'; ctx.lineWidth=Math.max(3/seatState.view.scale,size*.24); ctx.strokeText(textValue,x,y); ctx.fillStyle=palette.ink; ctx.fillText(textValue,x,y); ctx.restore();
+    }
+    function drawFloorplan() {
+      ctx.save();
+      ctx.fillStyle=palette.paper;
+      ctx.fillRect(0,0,PLAN.width,PLAN.height);
+
+      const floor=new Path2D();
+      floor.moveTo(18,34);floor.lineTo(330,181);floor.lineTo(398,173);floor.lineTo(684,140);floor.lineTo(673,268);floor.lineTo(548,264);floor.lineTo(489,407);floor.lineTo(444,525);floor.lineTo(74,371);floor.lineTo(99,239);floor.lineTo(18,194);floor.closePath();
+      ctx.fillStyle='rgba(91,119,97,.055)';ctx.fill(floor);
+
+      const wall=(points,width=20)=>{ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);points.slice(1).forEach(point=>ctx.lineTo(point[0],point[1]));ctx.strokeStyle=palette.wall;ctx.lineWidth=width;ctx.lineJoin='miter';ctx.lineCap='square';ctx.stroke();};
+      wall([[18,34],[330,181],[398,173],[684,140]],24);
+      wall([[684,140],[673,268],[548,264],[489,407],[444,525]],24);
+      wall([[444,525],[74,371],[99,239],[18,194]],24);
+      wall([[18,194],[18,34]],18);
+
+      wall([[91,77],[63,141],[111,166],[131,117],[172,137],[149,190],[99,164]],17);
+      wall([[18,194],[103,238],[94,281]],14);
+      wall([[108,238],[152,228]],10);
+      wall([[330,181],[312,273],[344,287]],22);
+      wall([[398,173],[389,220],[434,217],[444,177]],16);
+      wall([[487,162],[468,222],[506,229],[518,157]],18);
+      wall([[548,264],[502,258],[469,345],[499,359]],22);
+      wall([[489,407],[461,397],[434,465]],18);
+
+      ctx.strokeStyle=palette.detail;ctx.fillStyle='rgba(194,145,154,.08)';ctx.lineWidth=1.4;
+      const stage=new Path2D();stage.moveTo(412,342);stage.lineTo(481,360);stage.lineTo(467,444);stage.lineTo(397,425);stage.closePath();ctx.fill(stage);ctx.stroke(stage);
+      for(let step=0;step<4;step++){ctx.beginPath();ctx.moveTo(409+step*8,347+step*2);ctx.lineTo(398+step*8,423+step*2);ctx.stroke();}
+
+      ctx.beginPath();ctx.arc(555,213,42,Math.PI,Math.PI*2);ctx.stroke();
+      for(let angle=190;angle<=350;angle+=12){const rad=angle*RAD;ctx.beginPath();ctx.moveTo(555+Math.cos(rad)*24,213+Math.sin(rad)*24);ctx.lineTo(555+Math.cos(rad)*42,213+Math.sin(rad)*42);ctx.stroke();}
+      ctx.beginPath();ctx.arc(555,213,24,Math.PI,Math.PI*2);ctx.stroke();
+
+      const partition=(a,b)=>{ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();};
+      partition([103,238],[130,252]);partition([130,252],[119,307]);partition([119,307],[87,292]);
+      partition([389,220],[463,229]);partition([463,229],[468,276]);partition([506,229],[548,231]);
+      partition([548,231],[548,264]);partition([613,211],[673,214]);partition([613,211],[613,260]);
+
+      const door=(x,y,r,start=0)=>{ctx.beginPath();ctx.arc(x,y,r,start,start+Math.PI/2);ctx.stroke();ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(start+Math.PI/2)*r,y+Math.sin(start+Math.PI/2)*r);ctx.stroke();};
+      door(103,238,20,.2);door(389,220,18,0);door(468,276,18,-Math.PI/2);door(548,264,18,Math.PI);door(613,260,18,Math.PI);
+      ctx.restore();
+    }
+    function drawGrid() {
+      if(!seatState.showGrid)return; const step=meter(1); ctx.save(); ctx.strokeStyle='rgba(91,119,97,.22)'; ctx.lineWidth=1/seatState.view.scale;
+      for(let x=0;x<=PLAN.width;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,PLAN.height);ctx.stroke();}
+      for(let y=0;y<=PLAN.height;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(PLAN.width,y);ctx.stroke();} ctx.restore();
+    }
+    function drawFloorplanLabels() {
+      const floorLabel=(lines,x,y)=>{
+        ctx.save();ctx.font='500 11px Arial, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        const width=Math.max(...lines.map(line=>ctx.measureText(line).width))+8,height=lines.length*12+6;
+        roundRect(ctx,x-width/2,y-height/2,width,height,2);ctx.fillStyle=palette.paper;ctx.fill();
+        ctx.fillStyle=palette.ink;lines.forEach((line,index)=>ctx.fillText(line,x,y+(index-(lines.length-1)/2)*12));ctx.restore();
+      };
+      floorLabel(['kitchen'],66,148);
+      floorLabel(['furniture'],421,238);
+      floorLabel(['cloak room'],636,237);
+      floorLabel(['stage'],439,386);
+    }
+    function drawObject(item) {
+      const width=meter(item.w),height=meter(item.h),x=-width/2,y=-height/2,selected=item.id===seatState.selectedId,occupied=item.type==='chair'&&String(item.guest||'').trim();
+      ctx.save();ctx.translate(item.x,item.y);ctx.rotate(item.r*RAD);ctx.lineWidth=1.3/seatState.view.scale;ctx.shadowColor=selected?'rgba(91,119,97,.32)':'rgba(38,48,40,.12)';ctx.shadowBlur=selected?12/seatState.view.scale:4/seatState.view.scale;
+      if(item.type==='round'){ctx.beginPath();ctx.ellipse(0,0,width/2,height/2,0,0,Math.PI*2);ctx.fillStyle=palette.sageSoft;ctx.strokeStyle=palette.sage;ctx.fill();ctx.stroke();}
+      else if(item.type==='piano'){ctx.beginPath();ctx.moveTo(x+width*.14,y+height*.28);ctx.bezierCurveTo(x+width*.4,y-height*.08,x+width*.94,y+height*.04,x+width*.93,y+height*.45);ctx.bezierCurveTo(x+width*.94,y+height*.8,x+width*.62,y+height*.97,x+width*.27,y+height*.78);ctx.closePath();ctx.fillStyle=palette.pinkSoft;ctx.strokeStyle=palette.pink;ctx.fill();ctx.stroke();}
+      else {const buffet=item.type==='buffetLow'||item.type==='buffetHigh';roundRect(ctx,x,y,width,height,item.type==='chair'?2:4);ctx.fillStyle=item.type==='chair'?(occupied?palette.sageStrong:palette.pinkSoft):(buffet?palette.pinkSoft:palette.sageSoft);ctx.strokeStyle=item.type==='chair'?(occupied?palette.sage:palette.pink):(buffet?palette.pink:palette.sage);ctx.fill();ctx.stroke(); if(buffet){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(0,y+height);ctx.moveTo(x,y+height/2);ctx.lineTo(x+width,y+height/2);ctx.stroke();}}
+      ctx.shadowColor='transparent';
+      if(selected){const pad=5/seatState.view.scale;ctx.strokeStyle=palette.sage;ctx.lineWidth=2/seatState.view.scale;if(item.type==='round'){ctx.beginPath();ctx.ellipse(0,0,width/2+pad,height/2+pad,0,0,Math.PI*2);}else roundRect(ctx,x-pad,y-pad,width+pad*2,height+pad*2,4/seatState.view.scale);ctx.stroke();const handleY=y-28/seatState.view.scale;ctx.beginPath();ctx.moveTo(0,y-pad);ctx.lineTo(0,handleY);ctx.stroke();ctx.beginPath();ctx.arc(0,handleY,8/seatState.view.scale,0,Math.PI*2);ctx.fillStyle=palette.sage;ctx.fill();ctx.strokeStyle=palette.paper;ctx.lineWidth=2/seatState.view.scale;ctx.stroke();}
+      const label=item.type==='chair'?item.guest:item.label;if(label){const labelY=item.type==='chair'?height/2+16/seatState.view.scale:0;ctx.save();ctx.rotate(-(item.r+seatState.view.rotation)*RAD);drawText(shortName(label),0,labelY,12/seatState.view.scale);ctx.restore();}ctx.restore();
+    }
+    function updateSeatUi() {
+      const item=selectedItem(),chairs=seatState.items.filter(entry=>entry.type==='chair'),tables=seatState.items.filter(entry=>['table90','table45','round'].includes(entry.type)),assigned=chairs.filter(entry=>String(entry.guest||'').trim()).length,waiting=unassignedNames().length,activeChair=item&&item.type==='chair';
+      seatUi.tableCount.textContent=String(tables.length);seatUi.chairCount.textContent=String(chairs.length);seatUi.assignedCount.textContent=String(assigned);seatUi.waitingCount.textContent=String(waiting);seatUi.guestCount.textContent=`${guestNames().length} names · ${waiting} unseated`;
+      const lowRemaining=Math.max(0,presets.buffetLow.limit-countType('buffetLow')),highRemaining=Math.max(0,presets.buffetHigh.limit-countType('buffetHigh'));
+      seatUi.optionBuffetLow.textContent=`Buffet 150 × 100 × 85 cm · ${lowRemaining}/2 remaining`;seatUi.optionBuffetLow.disabled=lowRemaining===0;
+      seatUi.optionBuffetHigh.textContent=`Buffet 150 × 100 × 120 cm · ${highRemaining}/3 remaining`;seatUi.optionBuffetHigh.disabled=highRemaining===0;
+      seatUi.zoom.value=String(seatState.view.scale);seatUi.zoomValue.textContent=`${Math.round(seatState.view.scale*100)} %`;seatUi.mapRotation.value=String(Math.round(seatState.view.rotation));seatUi.mapRotationValue.textContent=`${Math.round(seatState.view.rotation)}°`;seatUi.grid.checked=seatState.showGrid;
+      if(item){const itemLabel=labels[item.type]||'Furniture';seatUi.selectedType.textContent=itemLabel;seatUi.selectedDetail.textContent=`${dimensionLabel(item)} · ${Math.round(item.r)}°`;seatUi.status.textContent=`${itemLabel} selected`;seatUi.itemLabel.disabled=false;if(document.activeElement!==seatUi.itemLabel)seatUi.itemLabel.value=item.label||'';seatUi.guestName.disabled=!activeChair;if(document.activeElement!==seatUi.guestName)seatUi.guestName.value=activeChair?item.guest||'':'';seatUi.itemRotation.disabled=false;seatUi.itemRotation.value=String(Math.round(item.r));seatUi.itemRotationValue.textContent=`${Math.round(item.r)}°`;}
+      else{seatUi.selectedType.textContent='Nothing selected';seatUi.selectedDetail.textContent='–';seatUi.status.textContent='Select furniture';seatUi.itemLabel.disabled=true;seatUi.itemLabel.value='';seatUi.guestName.disabled=true;seatUi.guestName.value='';seatUi.itemRotation.disabled=true;seatUi.itemRotation.value='0';seatUi.itemRotationValue.textContent='0°';}
+      seatUi.copy.disabled=!item;seatUi.delete.disabled=!item;seatUi.clearGuest.disabled=!activeChair||!String(item?.guest||'').trim();seatUi.nextGuest.disabled=waiting===0||!(firstEmptyChair()||(activeChair&&!String(item.guest||'').trim()));seatUi.allGuests.disabled=waiting===0||!firstEmptyChair();
+    }
+    function renderSeatNow(){dirty=false;if(destroyed)return;const dpr=window.devicePixelRatio||1,size=canvasSize();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,size.width,size.height);ctx.fillStyle=palette.stage;ctx.fillRect(0,0,size.width,size.height);ctx.save();ctx.translate(size.width/2+seatState.view.x,size.height/2+seatState.view.y);ctx.rotate(seatState.view.rotation*RAD);ctx.scale(seatState.view.scale,seatState.view.scale);ctx.translate(-PLAN.width/2,-PLAN.height/2);drawFloorplan();drawGrid();drawFloorplanLabels();seatState.items.forEach(drawObject);ctx.restore();updateSeatUi();}
+    function renderSeat(){if(dirty||destroyed)return;dirty=true;requestAnimationFrame(renderSeatNow);}
+    function resizeCanvas(){const rect=wrap.getBoundingClientRect(),dpr=window.devicePixelRatio||1,width=Math.max(280,Math.floor(rect.width)),height=Math.max(340,Math.floor(rect.height));canvas.width=Math.floor(width*dpr);canvas.height=Math.floor(height*dpr);renderSeat();}
+    function fitView(save=true){const size=canvasSize();seatState.view.scale=clampValue(Math.min((size.width-28)/PLAN.width,(size.height-28)/PLAN.height),.35,4);seatState.view.x=0;seatState.view.y=0;seatState.view.rotation=0;if(save)persist();renderSeat();}
+    function zoomAt(nextScale,screenX,screenY){const size=canvasSize(),anchorX=Number.isFinite(screenX)?screenX:size.width/2,anchorY=Number.isFinite(screenY)?screenY:size.height/2,anchor=screenToPlan(anchorX,anchorY);seatState.view.scale=clampValue(nextScale,.35,4);const after=planToScreen(anchor.x,anchor.y);seatState.view.x+=anchorX-after.x;seatState.view.y+=anchorY-after.y;renderSeat();}
+    function rotateAt(nextRotation,screenX,screenY){const size=canvasSize(),anchorX=Number.isFinite(screenX)?screenX:size.width/2,anchorY=Number.isFinite(screenY)?screenY:size.height/2,anchor=screenToPlan(anchorX,anchorY);seatState.view.rotation=normalizeDegrees(nextRotation);const after=planToScreen(anchor.x,anchor.y);seatState.view.x+=anchorX-after.x;seatState.view.y+=anchorY-after.y;renderSeat();}
+    function itemAt(screenX,screenY){const point=screenToPlan(screenX,screenY),pad=Math.max(8/seatState.view.scale,meter(.12));for(let i=seatState.items.length-1;i>=0;i--){const item=seatState.items[i],local=planToLocal(item,point),width=meter(item.w),height=meter(item.h);if(item.type==='round'){const rx=width/2+pad,ry=height/2+pad;if((local.x*local.x)/(rx*rx)+(local.y*local.y)/(ry*ry)<=1)return item;}else if(Math.abs(local.x)<=width/2+pad&&Math.abs(local.y)<=height/2+pad)return item;}return null;}
+    function hitRotateHandle(item,screenX,screenY){if(!item)return false;const p=localToPlan(item,0,-meter(item.h)/2-28/seatState.view.scale),s=planToScreen(p.x,p.y);return Math.hypot(screenX-s.x,screenY-s.y)<=18;}
+    function addBanquet(center){const table=makeItem('table90',center.x,center.y,-12),created=[table],offsets=[[-.735,-.715,168],[-.245,-.715,168],[.245,-.715,168],[.735,-.715,168],[-.735,.715,-12],[-.245,.715,-12],[.245,.715,-12],[.735,.715,-12]];offsets.forEach(([mx,my,rotation])=>{const p=localToPlan(table,meter(mx),meter(my));created.push(makeItem('chair',p.x,p.y,rotation));});seatState.items.push(...created);seatState.selectedId=table.id;}
+    function addRoundGroup(center){const table=makeItem('round',center.x,center.y),created=[table];for(let index=0;index<8;index++){const angle=index*45,rad=(angle-90)*RAD,radius=meter(1.05);created.push(makeItem('chair',center.x+Math.cos(rad)*radius,center.y+Math.sin(rad)*radius,angle));}seatState.items.push(...created);seatState.selectedId=table.id;}
+    function addCurrent(){const type=seatUi.itemType.value,center=viewportCenterPlan();if(!canAddType(type)){seatUi.status.textContent=`All ${presets[type].limit} buffet tables have already been added`;return;}if(type==='banquet')addBanquet(center);else if(type==='roundGroup')addRoundGroup(center);else{const item=makeItem(type,center.x,center.y,type==='piano'?-25:(type==='buffetLow'||type==='buffetHigh')?-10:0);seatState.items.push(item);seatState.selectedId=item.id;}persist('Furniture added');renderSeat();}
+    function copySelected(){const item=selectedItem();if(!item)return;if(!canAddType(item.type)){seatUi.status.textContent=`The maximum for this buffet type is ${presets[item.type].limit}`;return;}const copy={...item,id:`${item.type}-${sequence++}`,x:clampValue(item.x+meter(.5),0,PLAN.width),y:clampValue(item.y+meter(.5),0,PLAN.height),guest:item.type==='chair'?'':item.guest,label:''};seatState.items.push(copy);seatState.selectedId=copy.id;persist('Furniture duplicated');renderSeat();}
+    function deleteSelected(){if(!seatState.selectedId)return;seatState.items=seatState.items.filter(item=>item.id!==seatState.selectedId);seatState.selectedId=seatState.items[0]?.id||null;persist('Furniture deleted');renderSeat();}
+    function resetPlan(){if(!confirm('Clear all furniture and guest names from the seating plan?'))return;seatState.items=[];seatState.selectedId=null;seatState.guestList='';seatUi.guestList.value='';fitView(false);persist('Seating plan cleared');renderSeat();}
+    function seatNext(){const names=unassignedNames();if(!names.length)return;let chair=selectedItem();if(!chair||chair.type!=='chair'||String(chair.guest||'').trim())chair=firstEmptyChair();if(!chair)return;chair.guest=names[0];seatState.selectedId=chair.id;persist('Guest seated');renderSeat();}
+    function seatAll(){const names=unassignedNames(),chairs=seatState.items.filter(item=>item.type==='chair'&&!String(item.guest||'').trim());chairs.forEach((chair,index)=>{if(index<names.length)chair.guest=names[index];});if(chairs[0])seatState.selectedId=chairs[0].id;persist('Guests seated');renderSeat();}
+    function clearGuest(){const item=selectedItem();if(!item||item.type!=='chair')return;item.guest='';persist('Seat cleared');renderSeat();}
+    function exportSeat(){const blob=new Blob([JSON.stringify(seatState,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='wedding-seating-plan.json';link.click();URL.revokeObjectURL(url);}
+    async function importSeat(file){if(!file)return;try{const data=JSON.parse(await file.text());if(!Array.isArray(data.items))throw new Error('items');const normalized={...freshSeatingPlan(),...data,view:{...freshSeatingPlan().view,...(data.view||{})}};seatState.items=normalized.items.map(normalizeItem);seatState.selectedId=normalized.selectedId||seatState.items[0]?.id||null;seatState.guestList=String(normalized.guestList||'');seatState.pxPerMeter=Number(normalized.pxPerMeter)||14.25;seatState.showGrid=normalized.showGrid!==false;seatState.view={x:Number(normalized.view.x)||0,y:Number(normalized.view.y)||0,scale:clampValue(Number(normalized.view.scale)||1,.35,4),rotation:normalizeDegrees(Number(normalized.view.rotation)||0)};seatUi.guestList.value=seatState.guestList;sequence=seatState.items.length+1;persist('Seating plan imported');renderSeat();}catch{alert('The seating plan file could not be imported.');}seatUi.importFile.value='';}
+    const pointerPosition=event=>{const rect=canvas.getBoundingClientRect();return{x:event.clientX-rect.left,y:event.clientY-rect.top};};
+    function currentGesture(){if(pointers.size<2)return null;const [a,b]=[...pointers.values()].slice(0,2);return{cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,distance:Math.hypot(a.x-b.x,a.y-b.y),angle:Math.atan2(b.y-a.y,b.x-a.x)/RAD};}
+    function beginPointer(event){canvas.setPointerCapture(event.pointerId);canvas.classList.add('dragging');const pos=pointerPosition(event);pointers.set(event.pointerId,pos);if(pointers.size===2){const g=currentGesture();drag={mode:'gesture',startDistance:Math.max(1,g.distance),startAngle:g.angle,startScale:seatState.view.scale,startRotation:seatState.view.rotation,anchor:screenToPlan(g.cx,g.cy)};return;}const selected=selectedItem();if(hitRotateHandle(selected,pos.x,pos.y)){const point=screenToPlan(pos.x,pos.y);drag={mode:'rotate',id:selected.id,startRotation:selected.r,startAngle:Math.atan2(point.y-selected.y,point.x-selected.x)/RAD};return;}const item=itemAt(pos.x,pos.y);if(item){seatState.selectedId=item.id;const point=screenToPlan(pos.x,pos.y);drag={mode:'move',id:item.id,dx:point.x-item.x,dy:point.y-item.y};}else{seatState.selectedId=null;drag={mode:'pan',lastX:pos.x,lastY:pos.y};}renderSeat();}
+    function movePointer(event){if(!pointers.has(event.pointerId))return;const pos=pointerPosition(event);pointers.set(event.pointerId,pos);if(drag?.mode==='gesture'){const g=currentGesture();if(!g)return;seatState.view.scale=clampValue(drag.startScale*(g.distance/drag.startDistance),.35,4);seatState.view.rotation=normalizeDegrees(drag.startRotation+g.angle-drag.startAngle);const after=planToScreen(drag.anchor.x,drag.anchor.y);seatState.view.x+=g.cx-after.x;seatState.view.y+=g.cy-after.y;renderSeat();return;}if(!drag)return;if(drag.mode==='pan'){seatState.view.x+=pos.x-drag.lastX;seatState.view.y+=pos.y-drag.lastY;drag.lastX=pos.x;drag.lastY=pos.y;renderSeat();return;}const item=seatState.items.find(entry=>entry.id===drag.id);if(!item)return;const point=screenToPlan(pos.x,pos.y);if(drag.mode==='move'){item.x=clampValue(point.x-drag.dx,0,PLAN.width);item.y=clampValue(point.y-drag.dy,0,PLAN.height);}else if(drag.mode==='rotate'){const angle=Math.atan2(point.y-item.y,point.x-item.x)/RAD;item.r=normalizeDegrees(drag.startRotation+angle-drag.startAngle);}renderSeat();}
+    function endPointer(event){pointers.delete(event.pointerId);if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);if(pointers.size===1&&drag?.mode==='gesture'){const remaining=[...pointers.values()][0];drag={mode:'pan',lastX:remaining.x,lastY:remaining.y};}else if(pointers.size===0){if(drag)persist();drag=null;canvas.classList.remove('dragging');}renderSeat();}
+    function keyHandler(event){const tag=document.activeElement?.tagName;if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;const item=selectedItem();if(!item)return;if(event.key.toLowerCase()==='q'||event.key==='ArrowLeft')item.r=normalizeDegrees(item.r-5);else if(event.key.toLowerCase()==='e'||event.key==='ArrowRight')item.r=normalizeDegrees(item.r+5);else if(event.key==='Delete'||event.key==='Backspace'){deleteSelected();return;}else return;event.preventDefault();persist();renderSeat();}
+
+    seatUi.add.addEventListener('click',addCurrent);seatUi.copy.addEventListener('click',copySelected);seatUi.delete.addEventListener('click',deleteSelected);seatUi.reset.addEventListener('click',resetPlan);seatUi.fit.addEventListener('click',()=>fitView(true));seatUi.export.addEventListener('click',exportSeat);seatUi.import.addEventListener('click',()=>seatUi.importFile.click());seatUi.importFile.addEventListener('change',()=>importSeat(seatUi.importFile.files?.[0]));
+    seatUi.zoom.addEventListener('input',()=>{zoomAt(Number(seatUi.zoom.value));persist();});seatUi.mapRotation.addEventListener('input',()=>{rotateAt(Number(seatUi.mapRotation.value));persist();});seatUi.grid.addEventListener('change',()=>{seatState.showGrid=seatUi.grid.checked;persist();renderSeat();});
+    seatUi.itemLabel.addEventListener('input',()=>{const item=selectedItem();if(!item)return;item.label=seatUi.itemLabel.value;persist();renderSeat();});seatUi.guestName.addEventListener('input',()=>{const item=selectedItem();if(!item||item.type!=='chair')return;item.guest=seatUi.guestName.value;persist();renderSeat();});seatUi.itemRotation.addEventListener('input',()=>{const item=selectedItem();if(!item)return;item.r=normalizeDegrees(Number(seatUi.itemRotation.value));persist();renderSeat();});
+    seatUi.guestList.addEventListener('input',()=>{seatState.guestList=seatUi.guestList.value;persist();renderSeat();});seatUi.clearGuest.addEventListener('click',clearGuest);seatUi.nextGuest.addEventListener('click',seatNext);seatUi.allGuests.addEventListener('click',seatAll);
+    canvas.addEventListener('pointerdown',beginPointer);canvas.addEventListener('pointermove',movePointer);canvas.addEventListener('pointerup',endPointer);canvas.addEventListener('pointercancel',endPointer);canvas.addEventListener('wheel',event=>{event.preventDefault();const pos=pointerPosition(event);if(event.shiftKey)rotateAt(seatState.view.rotation+(event.deltaY>0?4:-4),pos.x,pos.y);else zoomAt(seatState.view.scale*Math.exp(-event.deltaY*.0012),pos.x,pos.y);persist();},{passive:false});
+    window.addEventListener('keydown',keyHandler);
+    const resizeObserver=new ResizeObserver(resizeCanvas);resizeObserver.observe(wrap);resizeCanvas();if(!seatState.items.length||!Number.isFinite(seatState.view.scale))fitView(false);renderSeat();
+    return()=>{destroyed=true;resizeObserver.disconnect();window.removeEventListener('keydown',keyHandler);};
+  }
+
+  function render() {
+    if (seatingCleanup) { seatingCleanup(); seatingCleanup = null; }
+    renderNav();
+    const views = { dashboard: renderDashboard, rewards: renderRewards, budget: renderBudget, checklist: renderChecklist, calendar: renderCalendar, guests: renderGuests, ceremony: () => renderPlace('ceremony'), reception: () => renderPlace('reception'), vendors: renderVendors, seating: renderSeating, supplies: renderSupplies };
+    const rewardToast = ui.rewardToast ? `<section class="card reward-toast" data-reward-toast role="status" aria-live="polite"><span class="reward-toast-icon"><i data-lucide="trophy" aria-hidden="true"></i></span><div><p class="item-title">${esc(ui.rewardToast.title)}</p><p class="text-small text-muted">${esc(ui.rewardToast.detail)}</p></div></section>` : '';
+    content.innerHTML = rewardToast + (views[ui.section] || renderDashboard)();
+    updateSubtitle();
+    globalThis.lucide?.createIcons({ attrs: { width:16, height:16 } });
+    if (ui.section === 'seating') seatingCleanup = initSeatingCanvas();
+    window.clearTimeout(rewardToastTimer);
+    if (ui.rewardToast) rewardToastTimer = window.setTimeout(() => {
+      ui.rewardToast = null;
+      root.querySelector('[data-reward-toast]')?.remove();
+    }, 4600);
+  }
+
+  function showPendingRewardToast() {
+    root.querySelector('[data-reward-toast]')?.remove();
+    if (!ui.rewardToast) return;
+    content.insertAdjacentHTML('afterbegin', `<section class="card reward-toast" data-reward-toast role="status" aria-live="polite"><span class="reward-toast-icon"><i data-lucide="trophy" aria-hidden="true"></i></span><div><p class="item-title">${esc(ui.rewardToast.title)}</p><p class="text-small text-muted">${esc(ui.rewardToast.detail)}</p></div></section>`);
+    renderNav();
+    globalThis.lucide?.createIcons({ attrs: { width:16, height:16 } });
+    window.clearTimeout(rewardToastTimer);
+    rewardToastTimer = window.setTimeout(() => {
+      ui.rewardToast = null;
+      root.querySelector('[data-reward-toast]')?.remove();
+    }, 4600);
+  }
+
+  function switchSection(section) {
+    if (!navItems.some(item => item[0] === section)) return;
+    ui.section = section;
+    render();
+    content.focus?.();
+  }
+
+  root.addEventListener('click', event => {
+    const target = event.target.closest('button');
+    if (!target) return;
+    if (target.type === 'submit' && target.form) {
+      event.preventDefault();
+      if (target.form.reportValidity()) handleForm(target.form);
+      return;
+    }
+    if (target.dataset.section) return switchSection(target.dataset.section);
+    if (target.dataset.calendarShift) {
+      const cursor = ui.calendarCursor || (state.meta.weddingDate || todayIso()).slice(0,7);
+      const [year,month] = cursor.split('-').map(Number);
+      const shifted = new Date(year, month-1+Number(target.dataset.calendarShift), 1);
+      ui.calendarCursor = `${shifted.getFullYear()}-${String(shifted.getMonth()+1).padStart(2,'0')}`;
+      ui.selectedCalendarDate = `${ui.calendarCursor}-01`;
+      render();
+      return;
+    }
+    if (target.dataset.calendarToday !== undefined) {
+      ui.selectedCalendarDate = todayIso();
+      ui.calendarCursor = ui.selectedCalendarDate.slice(0,7);
+      render();
+      return;
+    }
+    if (target.dataset.calendarDate) {
+      ui.selectedCalendarDate = target.dataset.calendarDate;
+      ui.calendarCursor = target.dataset.calendarDate.slice(0,7);
+      ui.editCalendarEvent = null;
+      render();
+      return;
+    }
+    if (target.dataset.guestDrinkFilter !== undefined) {
+      ui.guestDrinkFilter = target.dataset.guestDrinkFilter;
+      render();
+      return;
+    }
+    if (target.dataset.guestsToSeating !== undefined) {
+      const names = state.guests.filter(guest => guest.rsvp === 'Attending').map(guest => guest.name.trim()).filter(Boolean);
+      if (!names.length) {
+        const badge = root.querySelector('#save-status');
+        if (badge) badge.textContent = 'Mark at least one guest as attending first';
+        return;
+      }
+      mutate(() => { state.seatingPlan.guestList = names.join('\n'); ui.section = 'seating'; }, `${names.length} guests sent to the seating plan`);
+      return;
+    }
+    const action = target.dataset.action;
+    if (action === 'save') {
+      incrementRewardAction('manualSaves');
+      saveState('Saved to browser', false);
+      createRecoverySnapshot('Manual save', true);
+      navigator.storage?.persist?.().catch(() => {});
+      showPendingRewardToast();
+      return;
+    }
+    if (action === 'export') {
+      incrementRewardAction('exports');
+      saveState('Backup downloaded', false);
+      createRecoverySnapshot('Downloaded backup', true);
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `wedding-plan-${new Date().toISOString().slice(0,10)}.json`;
+      link.click(); URL.revokeObjectURL(link.href); showPendingRewardToast(); return;
+    }
+    if (action === 'import') { createRecoverySnapshot('Before import', true); fileInput.click(); return; }
+    if (action === 'restore-recovery') {
+      const recoverySelect = root.querySelector('#recovery-snapshot-select');
+      const recovery = readRecoverySnapshots().find(item => item.id === recoverySelect?.value);
+      if (!recovery) return;
+      if (confirm(`Restore the recovery point from ${recoveryTimeLabel(recovery.timestamp)}? Your current data will be kept as a separate recovery point.`)) {
+        createRecoverySnapshot('Before recovery restore', true);
+        state = normalizeState(recovery.state);
+        Object.assign(ui,{section:'dashboard',editBudget:null,editBudgetCategory:null,editBudgetPayment:null,editVendor:null,editTable:null,editSupply:null,editCalendarEvent:null,editGuest:null,guestDrinkFilter:'All',calendarCursor:null,selectedCalendarDate:null,rewardToast:null});
+        incrementRewardAction('restores');
+        saveState('Recovery restored');
+        render();
+      }
+      return;
+    }
+    if (action === 'reset') {
+      if (confirm('Are you sure you want to clear everything and restore the starter template? Your current data will remain available in Recovery history.')) {
+        createRecoverySnapshot('Before reset', true);
+        mutate(() => { state = freshState(); Object.assign(ui,{section:'dashboard',editBudget:null,editBudgetCategory:null,editBudgetPayment:null,editVendor:null,editTable:null,editSupply:null,editCalendarEvent:null,editGuest:null,guestDrinkFilter:'All',calendarCursor:null,selectedCalendarDate:null,rewardToast:null}); }, 'Starter template restored');
+      }
+      return;
+    }
+    const cancel = target.dataset.cancelEdit;
+    if (cancel) { ui[`edit${cancel[0].toUpperCase()}${cancel.slice(1)}`] = null; render(); return; }
+    if (target.dataset.deleteBudget) {
+      const id = target.dataset.deleteBudget;
+      mutate(() => { state.budget = state.budget.filter(item => item.id !== id); state.budgetPayments = state.budgetPayments.filter(payment => payment.budgetId !== id); if (ui.editBudget === id) ui.editBudget = null; if (ui.editBudgetPayment && !state.budgetPayments.some(payment => payment.id === ui.editBudgetPayment)) ui.editBudgetPayment = null; }, 'Subcategory and its payment shares deleted');
+      return;
+    }
+    if (target.dataset.editBudgetCategory) {
+      ui.editBudgetCategory = target.dataset.editBudgetCategory;
+      render();
+      return;
+    }
+    if (target.dataset.deleteBudgetCategory) {
+      const category = target.dataset.deleteBudgetCategory;
+      mutate(() => {
+        const removedBudgetIds = new Set(state.budget.filter(row => row.category === category).map(row => row.id));
+        state.budgetCategories = state.budgetCategories.filter(name => name !== category);
+        state.budget = state.budget.filter(row => row.category !== category);
+        state.budgetPayments = state.budgetPayments.filter(payment => !removedBudgetIds.has(payment.budgetId));
+        if (ui.editBudgetCategory === category) ui.editBudgetCategory = null;
+        if (ui.editBudget && !state.budget.some(row => row.id === ui.editBudget)) ui.editBudget = null;
+      }, 'Main category and its subcategories deleted');
+      return;
+    }
+    const map = [
+      ['editBudget','budget'],['editVendor','vendors'],['deleteVendor','vendors'],
+      ['editTable','tables'],['deleteTable','tables'],['editSupply','supplies'],['deleteSupply','supplies'],
+      ['editCalendarEvent','calendarEvents'],['deleteCalendarEvent','calendarEvents'],['editGuest','guests'],['deleteGuest','guests'],
+      ['editBudgetPayment','budgetPayments'],['deleteBudgetPayment','budgetPayments']
+    ];
+    for (const [key, collection] of map) {
+      const id = target.dataset[key]; if (!id) continue;
+      if (key.startsWith('edit')) {
+        ui[key] = id;
+        if (key === 'editCalendarEvent') {
+          const calendarEvent = state.calendarEvents.find(item => item.id === id);
+          if (calendarEvent) { ui.selectedCalendarDate = calendarEvent.date; ui.calendarCursor = calendarEvent.date.slice(0,7); }
+        }
+        render(); return;
+      }
+      const targetItem = state[collection].find(item => item.id === id);
+      const label = targetItem?.item || targetItem?.name || targetItem?.title || targetItem?.payer || 'item';
+      if (confirm(`Delete ${label}?`)) mutate(() => {
+        state[collection] = state[collection].filter(item => item.id !== id);
+        if (collection === 'guests') state.guests.forEach(guest => {
+          if (guest.linkedGuestId === id) {
+            guest.linkedGuestId = '';
+            guest.companionType = 'No link';
+          }
+        });
+      }, 'Deleted');
+      return;
+    }
+    if (target.dataset.deleteCheck) {
+      const id = target.dataset.deleteCheck;
+      mutate(() => { state.checklist = state.checklist.filter(item => item.id !== id); }, 'Task deleted'); return;
+    }
+    if (target.dataset.deleteTimeline) {
+      const id = target.dataset.deleteTimeline;
+      mutate(() => { state.timeline = state.timeline.filter(item => item.id !== id); }, 'Timeline item deleted'); return;
+    }
+    if (target.dataset.vendorBudget) {
+      const vendor = state.vendors.find(v => v.id === target.dataset.vendorBudget); if (!vendor) return;
+      mutate(() => {
+        if (!state.budgetCategories.length) state.budgetCategories.push('Other');
+        const vendorCategory = state.budgetCategories.includes(vendor.type)
+          ? vendor.type
+          : state.budgetCategories.includes('Other') ? 'Other' : state.budgetCategories[0];
+        let row = state.budget.find(b => b.sourceVendorId === vendor.id);
+        if (!row) { row = { id:uid(), category:vendorCategory, item:vendor.name, planned:num(vendor.total), actual:num(vendor.total), paid:num(vendor.deposit), due:'', notes:`Vendor: ${vendor.type}`, sourceVendorId:vendor.id }; state.budget.push(row); }
+        else { row.item=vendor.name; row.planned=num(vendor.total); row.actual=num(vendor.total); row.paid=num(vendor.deposit); }
+        ui.section = 'budget'; ui.editBudget = row.id;
+      }, 'Vendor added to budget');
+    }
+  });
+
+  root.addEventListener('change', event => {
+    if (event.target.matches('[name="companionType"]')) {
+      const linkedGuestSelect = event.target.form?.elements?.linkedGuestId;
+      if (linkedGuestSelect) {
+        const enabled = event.target.value !== 'No link';
+        linkedGuestSelect.disabled = !enabled;
+        if (!enabled) linkedGuestSelect.value = '';
+      }
+    }
+    if (event.target.matches('[data-check-id]')) {
+      const item = state.checklist.find(i => i.id === event.target.dataset.checkId);
+      if (item) mutate(() => { item.done = event.target.checked; }, event.target.checked ? 'Task completed' : 'Task reopened');
+    }
+    if (event.target.matches('[data-guest-status]')) {
+      const guest = state.guests.find(item => item.id === event.target.dataset.guestStatus);
+      const field = event.target.dataset.guestField;
+      if (guest && ['invitation','rsvp','drinkPreference'].includes(field)) mutate(() => { guest[field] = event.target.value; }, 'Guest status updated');
+    }
+  });
+
+  function handleForm(form) {
+    if (!form) return;
+    const data = Object.fromEntries(new FormData(form));
+    const kind = form.dataset.form;
+    if (kind === 'meta') mutate(() => { state.meta = { eventName:data.eventName.trim(), weddingDate:data.weddingDate, websiteUrl:data.websiteUrl.trim() }; }, 'Wedding details saved');
+    if (kind === 'quick-task') mutate(() => { state.checklist.push({ id:uid(), text:data.text.trim(), category:'Quick add', due:'', done:false }); }, 'Quick task added');
+    if (kind === 'checklist') mutate(() => { state.checklist.push({ id:uid(), text:data.text.trim(), category:data.category.trim(), due:data.due, done:false }); }, 'Task added');
+    if (kind === 'calendar-event') mutate(() => {
+      const value = { id:data.id||uid(), date:data.date, time:data.time, title:data.title.trim(), category:data.category, notes:data.notes.trim() };
+      const index = state.calendarEvents.findIndex(item => item.id === value.id);
+      index >= 0 ? state.calendarEvents[index] = value : state.calendarEvents.push(value);
+      ui.editCalendarEvent = null;
+      ui.selectedCalendarDate = value.date;
+      ui.calendarCursor = value.date.slice(0,7);
+    }, data.id ? 'Calendar entry updated' : 'Calendar entry added');
+    if (kind === 'guest') {
+      const companionType = data.companionType || 'No link';
+      const linkedGuestId = companionType === 'No link' ? '' : (data.linkedGuestId || '');
+      if (companionType !== 'No link' && !linkedGuestId) {
+        const badge = root.querySelector('#save-status');
+        if (badge) badge.textContent = 'Select the guest this plus-one or child belongs with';
+        return;
+      }
+      mutate(() => {
+      const value = { id:data.id||uid(), name:data.name.trim(), contact:data.contact.trim(), invitation:data.invitation, rsvp:data.rsvp, drinkPreference:data.drinkPreference || 'Nothing selected', companionType, linkedGuestId, notes:data.notes.trim() };
+      const index = state.guests.findIndex(item => item.id === value.id);
+      index >= 0 ? state.guests[index] = value : state.guests.push(value);
+      ui.editGuest = null;
+      }, data.id ? 'Guest updated' : 'Guest added');
+    }
+    if (kind === 'place') mutate(() => { state[form.dataset.scope] = { venue:data.venue.trim(), address:data.address.trim(), time:data.time, contact:data.contact.trim(), notes:data.notes.trim() }; }, 'Venue details saved');
+    if (kind === 'timeline') mutate(() => { state.timeline.push({ id:uid(), scope:form.dataset.scope, time:data.time, title:data.title.trim() }); }, 'Timeline item added');
+    if (kind === 'vendor') mutate(() => { const value={ id:data.id||uid(), type:data.type.trim(), name:data.name.trim(), contact:data.contact.trim(), total:num(data.total), deposit:num(data.deposit), status:data.status, notes:data.notes.trim() }; const i=state.vendors.findIndex(x=>x.id===value.id); i>=0?state.vendors[i]=value:state.vendors.push(value); ui.editVendor=null; }, data.id ? 'Vendor updated' : 'Vendor added');
+    if (kind === 'table') {
+      if (num(data.assigned) > num(data.seats)) { alert('Assigned seats cannot exceed the number of seats at the table.'); return; }
+      mutate(() => { const value={ id:data.id||uid(), name:data.name.trim(), shape:data.shape, seats:num(data.seats), assigned:num(data.assigned), notes:data.notes.trim() }; const i=state.tables.findIndex(x=>x.id===value.id); i>=0?state.tables[i]=value:state.tables.push(value); ui.editTable=null; }, data.id ? 'Table updated' : 'Table added');
+    }
+    if (kind === 'supply') mutate(() => { const value={ id:data.id||uid(), item:data.item.trim(), qty:num(data.qty), owner:data.owner.trim(), status:data.status, cost:num(data.cost), notes:data.notes.trim() }; const i=state.supplies.findIndex(x=>x.id===value.id); i>=0?state.supplies[i]=value:state.supplies.push(value); ui.editSupply=null; }, data.id ? 'Supply item updated' : 'Supply item added');
+    if (kind === 'budget-limit') mutate(() => { state.totalBudget=num(data.totalBudget); }, 'Total budget saved');
+    if (kind === 'budget-category') {
+      const categoryName = data.categoryName.trim();
+      const originalName = data.originalName.trim();
+      const duplicate = state.budgetCategories.some(category => category.toLocaleLowerCase('en') === categoryName.toLocaleLowerCase('en') && category !== originalName);
+      if (duplicate) {
+        const badge = root.querySelector('#save-status');
+        if (badge) badge.textContent = 'A main category with this name already exists';
+        return;
+      }
+      mutate(() => {
+        if (originalName) {
+          const index = state.budgetCategories.indexOf(originalName);
+          if (index >= 0) state.budgetCategories[index] = categoryName;
+          state.budget.forEach(row => { if (row.category === originalName) row.category = categoryName; });
+        } else {
+          state.budgetCategories.push(categoryName);
+        }
+        ui.editBudgetCategory = null;
+      }, originalName ? 'Main category renamed' : 'Main category added');
+    }
+    if (kind === 'budget-payment') {
+      const expense = state.budget.find(row => row.id === data.budgetId);
+      if (!expense) return;
+      mutate(() => {
+        const value = { id:data.id||uid(), budgetId:data.budgetId, payer:data.payer.trim(), amount:num(data.amount), date:data.date, notes:data.notes.trim() };
+        const index = state.budgetPayments.findIndex(payment => payment.id === value.id);
+        index >= 0 ? state.budgetPayments[index] = value : state.budgetPayments.push(value);
+        const allocatedToExpense = state.budgetPayments.filter(payment => payment.budgetId === expense.id).reduce((sum,payment) => sum + num(payment.amount), 0);
+        expense.paid = Math.max(num(expense.paid), allocatedToExpense);
+        expense.actual = Math.max(num(expense.actual), allocatedToExpense);
+        ui.editBudgetPayment = null;
+      }, data.id ? 'Payment share updated' : 'Payment share added');
+    }
+    if (kind === 'budget') {
+      if (num(data.paid) > num(data.actual)) { alert('The paid amount cannot exceed the actual expense.'); return; }
+      const allocatedPayments = state.budgetPayments.filter(payment => payment.budgetId === data.id).reduce((sum,payment) => sum + num(payment.amount), 0);
+      if (num(data.paid) < allocatedPayments) { alert(`The paid amount cannot be lower than the amount allocated to payers ${money(allocatedPayments)}.`); return; }
+      mutate(() => { const existing=state.budget.find(x=>x.id===data.id); const value={ ...(existing||{}), id:data.id||uid(), category:data.category, item:data.item.trim(), planned:num(data.planned), actual:num(data.actual), paid:num(data.paid), due:data.due, notes:data.notes.trim() }; const i=state.budget.findIndex(x=>x.id===value.id); i>=0?state.budget[i]=value:state.budget.push(value); ui.editBudget=null; }, data.id ? 'Budget item updated' : 'Budget item added');
+    }
+  }
+
+  root.addEventListener('submit', event => {
+    event.preventDefault();
+    handleForm(event.target.closest('form'));
+  });
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files?.[0]; if (!file) return;
+    try {
+      const parsed = JSON.parse(await file.text());
+      if (!parsed || typeof parsed !== 'object') throw new Error('Invalid file');
+      if (Array.isArray(parsed.budget)) {
+        state = normalizeState(parsed); Object.assign(ui,{section:'dashboard',editBudget:null,editBudgetCategory:null,editBudgetPayment:null,editVendor:null,editTable:null,editSupply:null,editCalendarEvent:null,editGuest:null,guestDrinkFilter:'All',calendarCursor:null,selectedCalendarDate:null,rewardToast:null});
+      } else if (Array.isArray(parsed.items)) {
+        const fresh = freshSeatingPlan();
+        state.seatingPlan = { ...fresh, ...parsed, items:parsed.items, view:{ ...fresh.view, ...(parsed.view || {}) } };
+        ui.section = 'seating';
+      } else {
+        throw new Error('Invalid file');
+      }
+      incrementRewardAction('imports');
+      saveState('Backup imported'); render();
+    } catch { alert('The file could not be imported. Choose a JSON backup exported from this app or a seating plan file.'); }
+    fileInput.value = '';
+  });
+
+  syncRewards(false);
+  try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
+  render();
+  if (recoveredOnBoot) {
+    const badge = root.querySelector('#save-status');
+    if (badge) badge.textContent = 'Recovered from automatic browser backup';
+    recoveredOnBoot = false;
+  }
+  queueRecoverySnapshot('App opened');
+  navigator.storage?.persist?.().catch(() => {});
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
+      createRecoverySnapshot('App closed');
+    }
+  });
+  window.addEventListener('beforeunload', () => {
+    try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
+    createRecoverySnapshot('App closed');
+  });
+})();
+</script>

@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "eventName": "Our Wedding",
+    "weddingDate": "",
+    "websiteUrl": ""
+  },
+  "budgetCategories": [
+    "Venue",
+    "Food & drinks",
+    "Photography",
+    "Music",
+    "Attire",
+    "Flowers & decor",
+    "Transport",
+    "Stationery",
+    "Accommodation",
+    "Other"
+  ],
+  "checklist": [
+    {
+      "text": "Confirm the wedding date",
+      "category": "Essentials",
+      "due": "",
+      "done": false
+    },
+    {
+      "text": "Book the venue",
+      "category": "Venues",
+      "due": "",
+      "done": false
+    },
+    {
+      "text": "Draft the guest list",
+      "category": "Guests",
+      "due": "",
+      "done": false
+    },
+    {
+      "text": "Request photography quotes",
+      "category": "Vendors",
+      "due": "",
+      "done": false
+    },
+    {
+      "text": "Send save-the-dates",
+      "category": "Communication",
+      "due": "",
+      "done": false
+    }
+  ],
+  "tables": [
+    {
+      "name": "Table 1",
+      "shape": "Round",
+      "seats": 8,
+      "assigned": 0,
+      "notes": ""
+    }
+  ]
+}

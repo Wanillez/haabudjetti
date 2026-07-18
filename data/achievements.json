@@ -1,0 +1,713 @@
+[
+  {
+    "group": "Wedding journey",
+    "id": "date-set",
+    "title": "Save the date",
+    "description": "Set your wedding date.",
+    "icon": "calendar-heart",
+    "series": 2,
+    "target": 1
+  },
+  {
+    "group": "Wedding journey",
+    "id": "website-live",
+    "title": "Wedding website live",
+    "description": "Add your wedding website link.",
+    "icon": "globe-2",
+    "series": 5,
+    "target": 1
+  },
+  {
+    "group": "Wedding journey",
+    "id": "named-celebration",
+    "title": "Make it yours",
+    "description": "Give your celebration a custom name.",
+    "icon": "pen-line",
+    "series": 3,
+    "target": 1
+  },
+  {
+    "group": "Wedding journey",
+    "id": "travel-document",
+    "title": "Travel document complete",
+    "description": "Set the name, date and wedding website.",
+    "icon": "book-open-check",
+    "series": 4,
+    "target": 3
+  },
+  {
+    "group": "Wedding journey",
+    "id": "one-year-countdown",
+    "title": "One year to go",
+    "description": "Reach the final 365 days before the wedding.",
+    "icon": "hourglass",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Wedding journey",
+    "id": "hundred-day-countdown",
+    "title": "100-day countdown",
+    "description": "Reach 100 days before the wedding.",
+    "icon": "timer",
+    "series": 4,
+    "target": 1
+  },
+  {
+    "group": "Wedding journey",
+    "id": "thirty-day-countdown",
+    "title": "Final month",
+    "description": "Reach 30 days before the wedding.",
+    "icon": "party-popper",
+    "series": 6,
+    "target": 1
+  },
+  {
+    "group": "Wedding journey",
+    "id": "all-rounder",
+    "title": "Wedding all-rounder",
+    "description": "Make progress in six planning areas.",
+    "icon": "crown",
+    "series": 3,
+    "target": 6
+  },
+  {
+    "group": "Checklist",
+    "id": "list-builder",
+    "title": "List builder",
+    "description": "Grow your checklist to ten tasks.",
+    "icon": "list-plus",
+    "series": 5,
+    "target": 10
+  },
+  {
+    "group": "Checklist",
+    "id": "first-spark",
+    "title": "First spark",
+    "description": "Complete your first checklist task.",
+    "icon": "sparkles",
+    "series": 4,
+    "target": 1
+  },
+  {
+    "group": "Checklist",
+    "id": "three-down",
+    "title": "Three down",
+    "description": "Complete three wedding tasks.",
+    "icon": "check-check",
+    "series": 2,
+    "target": 3
+  },
+  {
+    "group": "Checklist",
+    "id": "checklist-hero",
+    "title": "Checklist hero",
+    "description": "Complete five wedding tasks.",
+    "icon": "list-checks",
+    "series": 1,
+    "target": 5
+  },
+  {
+    "group": "Checklist",
+    "id": "productive-ten",
+    "title": "Productive ten",
+    "description": "Complete ten wedding tasks.",
+    "icon": "badge-check",
+    "series": 5,
+    "target": 10
+  },
+  {
+    "group": "Checklist",
+    "id": "task-master",
+    "title": "Task master",
+    "description": "Complete twenty wedding tasks.",
+    "icon": "medal",
+    "series": 3,
+    "target": 20
+  },
+  {
+    "group": "Checklist",
+    "id": "forty-task-legend",
+    "title": "Forty-task legend",
+    "description": "Complete forty wedding tasks.",
+    "icon": "trophy",
+    "series": 4,
+    "target": 40
+  },
+  {
+    "group": "Checklist",
+    "id": "checklist-complete",
+    "title": "Nothing left behind",
+    "description": "Complete every task currently on your checklist.",
+    "icon": "circle-check-big",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Budget",
+    "id": "budget-set",
+    "title": "Budget grounded",
+    "description": "Set your total wedding budget.",
+    "icon": "wallet-cards",
+    "series": 5,
+    "target": 1
+  },
+  {
+    "group": "Budget",
+    "id": "first-budget-item",
+    "title": "First allocation",
+    "description": "Add your first budget subcategory.",
+    "icon": "badge-euro",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Budget",
+    "id": "budget-architect",
+    "title": "Budget architect",
+    "description": "Add five budget subcategories.",
+    "icon": "chart-pie",
+    "series": 3,
+    "target": 5
+  },
+  {
+    "group": "Budget",
+    "id": "budget-detailer",
+    "title": "Budget detailer",
+    "description": "Add ten budget subcategories.",
+    "icon": "table-properties",
+    "series": 2,
+    "target": 10
+  },
+  {
+    "group": "Budget",
+    "id": "real-cost",
+    "title": "Real numbers",
+    "description": "Record an actual wedding expense.",
+    "icon": "calculator",
+    "series": 6,
+    "target": 1
+  },
+  {
+    "group": "Budget",
+    "id": "money-trail",
+    "title": "Money trail",
+    "description": "Record who paid a wedding expense.",
+    "icon": "receipt-text",
+    "series": 4,
+    "target": 1
+  },
+  {
+    "group": "Budget",
+    "id": "payment-pro",
+    "title": "Payment pro",
+    "description": "Record five payment shares.",
+    "icon": "banknote",
+    "series": 5,
+    "target": 5
+  },
+  {
+    "group": "Budget",
+    "id": "team-effort",
+    "title": "Team effort",
+    "description": "Track payments from two different payers.",
+    "icon": "hand-coins",
+    "series": 2,
+    "target": 2
+  },
+  {
+    "group": "Budget",
+    "id": "paid-in-full",
+    "title": "Paid in full",
+    "description": "Fully pay one actual budget item.",
+    "icon": "circle-dollar-sign",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Budget",
+    "id": "five-paid",
+    "title": "Five bills conquered",
+    "description": "Fully pay five actual budget items.",
+    "icon": "badge-check",
+    "series": 4,
+    "target": 5
+  },
+  {
+    "group": "Guest list",
+    "id": "first-guest",
+    "title": "First guest",
+    "description": "Add the first person to your guest list.",
+    "icon": "user-plus",
+    "series": 2,
+    "target": 1
+  },
+  {
+    "group": "Guest list",
+    "id": "guest-gathering",
+    "title": "Guest gathering",
+    "description": "Add ten guests.",
+    "icon": "users",
+    "series": 2,
+    "target": 10
+  },
+  {
+    "group": "Guest list",
+    "id": "party-growing",
+    "title": "The party is growing",
+    "description": "Add twenty-five guests.",
+    "icon": "contact-round",
+    "series": 5,
+    "target": 25
+  },
+  {
+    "group": "Guest list",
+    "id": "full-house",
+    "title": "Full house",
+    "description": "Build a guest list of fifty people.",
+    "icon": "party-popper",
+    "series": 6,
+    "target": 50
+  },
+  {
+    "group": "Guest list",
+    "id": "grand-celebration",
+    "title": "Grand celebration",
+    "description": "Build a guest list of one hundred people.",
+    "icon": "sparkles",
+    "series": 4,
+    "target": 100
+  },
+  {
+    "group": "Guest list",
+    "id": "first-invite",
+    "title": "First invitation sent",
+    "description": "Mark your first invitation as sent.",
+    "icon": "send",
+    "series": 5,
+    "target": 1
+  },
+  {
+    "group": "Guest list",
+    "id": "invitations-airborne",
+    "title": "Invitations airborne",
+    "description": "Mark ten invitations as sent.",
+    "icon": "mail-check",
+    "series": 5,
+    "target": 10
+  },
+  {
+    "group": "Guest list",
+    "id": "invitation-wave",
+    "title": "Invitation wave",
+    "description": "Mark twenty-five invitations as sent.",
+    "icon": "mails",
+    "series": 3,
+    "target": 25
+  },
+  {
+    "group": "Guest list",
+    "id": "everyone-invited",
+    "title": "Everyone invited",
+    "description": "Send an invitation to every listed guest.",
+    "icon": "badge-check",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Guest list",
+    "id": "first-rsvp",
+    "title": "First RSVP",
+    "description": "Record your first RSVP response.",
+    "icon": "message-circle-check",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Guest list",
+    "id": "rsvp-ten",
+    "title": "RSVP momentum",
+    "description": "Record ten RSVP responses.",
+    "icon": "messages-square",
+    "series": 3,
+    "target": 10
+  },
+  {
+    "group": "Guest list",
+    "id": "all-rsvps",
+    "title": "Guest list confirmed",
+    "description": "Record an RSVP for every listed guest.",
+    "icon": "clipboard-check",
+    "series": 4,
+    "target": 1
+  },
+  {
+    "group": "Guest list",
+    "id": "drink-planner",
+    "title": "Drinks planner",
+    "description": "Record ten drink choices.",
+    "icon": "wine",
+    "series": 6,
+    "target": 10
+  },
+  {
+    "group": "Guest list",
+    "id": "plus-one-linked",
+    "title": "Perfect pair",
+    "description": "Link a plus-one to another guest.",
+    "icon": "heart-handshake",
+    "series": 2,
+    "target": 1
+  },
+  {
+    "group": "Guest list",
+    "id": "child-linked",
+    "title": "Family planner",
+    "description": "Link a child to an adult guest.",
+    "icon": "baby",
+    "series": 5,
+    "target": 1
+  },
+  {
+    "group": "Vendors",
+    "id": "vendor-scout",
+    "title": "Vendor scout",
+    "description": "Add your first vendor.",
+    "icon": "store",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Vendors",
+    "id": "vendor-trio",
+    "title": "Vendor trio",
+    "description": "Add three wedding vendors.",
+    "icon": "boxes",
+    "series": 5,
+    "target": 3
+  },
+  {
+    "group": "Vendors",
+    "id": "dream-team",
+    "title": "Dream team",
+    "description": "Add five wedding vendors.",
+    "icon": "handshake",
+    "series": 3,
+    "target": 5
+  },
+  {
+    "group": "Vendors",
+    "id": "vendor-network",
+    "title": "Vendor network",
+    "description": "Add ten wedding vendors.",
+    "icon": "network",
+    "series": 6,
+    "target": 10
+  },
+  {
+    "group": "Vendors",
+    "id": "first-booking",
+    "title": "First vendor booked",
+    "description": "Book your first vendor.",
+    "icon": "calendar-check",
+    "series": 2,
+    "target": 1
+  },
+  {
+    "group": "Vendors",
+    "id": "five-booked",
+    "title": "Team assembled",
+    "description": "Book five wedding vendors.",
+    "icon": "users-round",
+    "series": 4,
+    "target": 5
+  },
+  {
+    "group": "Vendors",
+    "id": "contract-signed",
+    "title": "Signed and secured",
+    "description": "Mark a vendor contract as signed.",
+    "icon": "file-signature",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "first-calendar-event",
+    "title": "Calendar started",
+    "description": "Add your first calendar entry.",
+    "icon": "calendar-plus",
+    "series": 5,
+    "target": 1
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "calendar-keeper",
+    "title": "Calendar keeper",
+    "description": "Add five calendar entries.",
+    "icon": "calendar-check",
+    "series": 5,
+    "target": 5
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "calendar-ten",
+    "title": "Plans in motion",
+    "description": "Add ten calendar entries.",
+    "icon": "calendar-range",
+    "series": 3,
+    "target": 10
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "calendar-twenty",
+    "title": "Master schedule",
+    "description": "Add twenty calendar entries.",
+    "icon": "calendar-days",
+    "series": 4,
+    "target": 20
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "calendar-variety",
+    "title": "Calendar variety",
+    "description": "Use four different calendar entry types.",
+    "icon": "palette",
+    "series": 6,
+    "target": 4
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "ceremony-location",
+    "title": "Ceremony location found",
+    "description": "Save your ceremony venue.",
+    "icon": "map-pin-check",
+    "series": 2,
+    "target": 1
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "ceremony-ready",
+    "title": "Ceremony ready",
+    "description": "Save the ceremony venue, address and time.",
+    "icon": "church",
+    "series": 2,
+    "target": 1
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "reception-location",
+    "title": "Reception location found",
+    "description": "Save your reception venue.",
+    "icon": "map-pinned",
+    "series": 6,
+    "target": 1
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "reception-ready",
+    "title": "Reception ready",
+    "description": "Save the reception venue, address and time.",
+    "icon": "glass-water",
+    "series": 6,
+    "target": 1
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "both-venues-ready",
+    "title": "Two perfect places",
+    "description": "Complete both ceremony and reception details.",
+    "icon": "map",
+    "series": 3,
+    "target": 2
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "timeline-three",
+    "title": "Run of show",
+    "description": "Add three ceremony or reception timeline items.",
+    "icon": "list-ordered",
+    "series": 1,
+    "target": 3
+  },
+  {
+    "group": "Calendar & venues",
+    "id": "timeline-eight",
+    "title": "Minute-by-minute magic",
+    "description": "Add eight ceremony or reception timeline items.",
+    "icon": "clock-3",
+    "series": 4,
+    "target": 8
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "first-furniture",
+    "title": "Room takes shape",
+    "description": "Add your first item to the seating plan.",
+    "icon": "layout-template",
+    "series": 3,
+    "target": 1
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "ten-chairs",
+    "title": "Chairs are ready",
+    "description": "Place ten chairs on the floor plan.",
+    "icon": "armchair",
+    "series": 1,
+    "target": 10
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "first-seat",
+    "title": "First seat assigned",
+    "description": "Assign your first guest to a chair.",
+    "icon": "user-check",
+    "series": 4,
+    "target": 1
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "seating-star",
+    "title": "Seating star",
+    "description": "Assign ten guests to chairs.",
+    "icon": "armchair",
+    "series": 4,
+    "target": 10
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "seating-twenty-five",
+    "title": "Table harmony",
+    "description": "Assign twenty-five guests to chairs.",
+    "icon": "users",
+    "series": 2,
+    "target": 25
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "seating-fifty",
+    "title": "Grand seating plan",
+    "description": "Assign fifty guests to chairs.",
+    "icon": "crown",
+    "series": 6,
+    "target": 50
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "everyone-seated",
+    "title": "Everyone has a seat",
+    "description": "Seat every name in the seating guest list.",
+    "icon": "circle-check-big",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "first-supply",
+    "title": "First supply tracked",
+    "description": "Add your first supply item.",
+    "icon": "package-plus",
+    "series": 5,
+    "target": 1
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "supply-ten",
+    "title": "Detail inventory",
+    "description": "Track ten supply items.",
+    "icon": "package-search",
+    "series": 3,
+    "target": 10
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "first-purchase",
+    "title": "First purchase",
+    "description": "Mark your first supply as purchased.",
+    "icon": "shopping-bag",
+    "series": 6,
+    "target": 1
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "detail-lover",
+    "title": "Detail lover",
+    "description": "Mark five supplies as purchased.",
+    "icon": "package-check",
+    "series": 1,
+    "target": 5
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "purchase-ten",
+    "title": "Supply champion",
+    "description": "Mark ten supplies as purchased.",
+    "icon": "badge-check",
+    "series": 4,
+    "target": 10
+  },
+  {
+    "group": "Seating & supplies",
+    "id": "all-supplies-ready",
+    "title": "Every detail ready",
+    "description": "Purchase every tracked supply item.",
+    "icon": "sparkles",
+    "series": 2,
+    "target": 1
+  },
+  {
+    "group": "Data safety",
+    "id": "manual-save",
+    "title": "Safe and sound",
+    "description": "Use Save to protect your latest work.",
+    "icon": "save",
+    "series": 1,
+    "target": 1
+  },
+  {
+    "group": "Data safety",
+    "id": "save-habit",
+    "title": "Save habit",
+    "description": "Use Save three times.",
+    "icon": "shield-check",
+    "series": 3,
+    "target": 3
+  },
+  {
+    "group": "Data safety",
+    "id": "first-backup",
+    "title": "Backup hero",
+    "description": "Download your first JSON backup.",
+    "icon": "download",
+    "series": 5,
+    "target": 1
+  },
+  {
+    "group": "Data safety",
+    "id": "backup-trio",
+    "title": "Triple protected",
+    "description": "Download three JSON backups.",
+    "icon": "archive",
+    "series": 4,
+    "target": 3
+  },
+  {
+    "group": "Data safety",
+    "id": "import-explorer",
+    "title": "Plan traveller",
+    "description": "Import a wedding plan backup.",
+    "icon": "upload",
+    "series": 2,
+    "target": 1
+  },
+  {
+    "group": "Data safety",
+    "id": "recovery-time-traveller",
+    "title": "Time traveller",
+    "description": "Restore a recovery snapshot.",
+    "icon": "history",
+    "series": 6,
+    "target": 1
+  }
+]

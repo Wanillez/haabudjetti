@@ -1,0 +1,842 @@
+:root {
+    color-scheme: light;
+    --sage: rgb(126 156 130);
+    --sage-soft: rgb(227 239 226);
+    --dusty-pink: rgb(204 141 158);
+    --dusty-pink-soft: rgb(248 226 233);
+    --background: rgb(251 248 245);
+    --foreground: rgb(67 71 64);
+    --card: rgb(255 255 255 / 88%);
+    --card-foreground: var(--foreground);
+    --primary: var(--dusty-pink);
+    --primary-foreground: rgb(255 255 255);
+    --secondary: var(--sage-soft);
+    --secondary-foreground: var(--foreground);
+    --muted: rgb(242 237 232);
+    --muted-foreground: rgb(104 112 102);
+    --accent: var(--sage-soft);
+    --accent-foreground: rgb(67 91 71);
+    --border: rgb(217 220 211);
+    --input: rgb(239 232 231);
+    --ring: var(--dusty-pink);
+    --viz-series-1: var(--dusty-pink);
+    --viz-series-2: var(--sage);
+    --viz-series-3: rgb(169 151 207);
+    --viz-series-4: rgb(222 184 100);
+    --viz-series-5: rgb(112 165 192);
+    --viz-series-6: rgb(220 143 130);
+  }
+  #wedding-planner-app {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    padding: 4px;
+    background:
+      radial-gradient(circle at 7% 3%, color-mix(in srgb, var(--dusty-pink) 18%, transparent), transparent 25%),
+      radial-gradient(circle at 94% 18%, color-mix(in srgb, var(--sage) 20%, transparent), transparent 31%),
+      radial-gradient(circle at 54% 62%, color-mix(in srgb, var(--viz-series-3) 8%, transparent), transparent 36%);
+  }
+  #wedding-planner-app .app-header,
+  #wedding-planner-app .brand-block,
+  #wedding-planner-app .app-shell,
+  #wedding-planner-app .section-head,
+  #wedding-planner-app .item-main,
+  #wedding-planner-app .item-actions,
+  #wedding-planner-app .legend-row,
+  #wedding-planner-app .check-main,
+  #wedding-planner-app .website-link {
+    display: flex;
+    align-items: center;
+  }
+  #wedding-planner-app .app-header {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: linear-gradient(110deg, color-mix(in srgb, var(--dusty-pink-soft) 76%, var(--card)), color-mix(in srgb, var(--sage-soft) 70%, var(--card)) 58%, color-mix(in srgb, var(--viz-series-3) 15%, var(--card)));
+  }
+  #wedding-planner-app .brand-block { gap: 10px; }
+  #wedding-planner-app .brand-mark {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 35%;
+    color: var(--primary-foreground);
+    background: linear-gradient(135deg, var(--primary), var(--sage));
+  }
+  #wedding-planner-app .brand-name { font-weight: 500; }
+  #wedding-planner-app .passport-kicker {
+    color: var(--accent-foreground);
+    font-weight: 500;
+    letter-spacing: .12em;
+  }
+  #wedding-planner-app .header-actions { justify-content: flex-end; }
+  #wedding-planner-app .wildflower-sprig {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    color: var(--sage);
+  }
+  #wedding-planner-app .wildflower-sprig svg {
+    transition: color .2s ease, transform .2s ease;
+  }
+  #wedding-planner-app .wildflower-sprig svg:nth-child(1) { color: var(--dusty-pink); transform: rotate(-9deg); }
+  #wedding-planner-app .wildflower-sprig svg:nth-child(2) { color: var(--sage); }
+  #wedding-planner-app .wildflower-sprig svg:nth-child(3) { color: var(--viz-series-3); transform: rotate(8deg); }
+  #wedding-planner-app .wildflower-sprig svg:nth-child(4) { color: var(--viz-series-4); }
+  #wedding-planner-app .app-header:hover .wildflower-sprig svg:nth-child(1) { transform: translateY(-2px) rotate(-14deg); }
+  #wedding-planner-app .app-header:hover .wildflower-sprig svg:nth-child(3) { transform: translateY(-3px) rotate(13deg); }
+  #wedding-planner-app .app-shell {
+    align-items: flex-start;
+    gap: 16px;
+  }
+  #wedding-planner-app .app-sidebar {
+    position: sticky;
+    top: 5px;
+    display: flex;
+    flex: 0 0 210px;
+    flex-direction: column;
+    gap: 14px;
+    background: linear-gradient(165deg, color-mix(in srgb, var(--sage-soft) 92%, var(--card)), color-mix(in srgb, var(--dusty-pink-soft) 56%, var(--card)));
+  }
+  #wedding-planner-app .nav-list,
+  #wedding-planner-app .section-stack,
+  #wedding-planner-app .list-stack,
+  #wedding-planner-app .category-list,
+  #wedding-planner-app .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #wedding-planner-app .nav-list .btn {
+    position: relative;
+    justify-content: flex-start;
+    transition: background-color .18s ease, color .18s ease, transform .18s ease;
+  }
+  #wedding-planner-app .nav-list .btn:hover { transform: translateX(2px); }
+  #wedding-planner-app .nav-list .btn[aria-pressed="true"] {
+    color: var(--primary-foreground);
+    background: linear-gradient(100deg, var(--dusty-pink), color-mix(in srgb, var(--sage) 62%, var(--dusty-pink)));
+  }
+  #wedding-planner-app .nav-list .btn .viz-badge { margin-left: auto; }
+  #wedding-planner-app .nav-list .btn[aria-pressed="true"]::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-left: auto;
+    border-radius: 50%;
+    background: var(--dusty-pink);
+  }
+  #wedding-planner-app .sidebar-foot { padding-top: 4px; }
+  #wedding-planner-app .sidebar-passport {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    color: var(--muted-foreground);
+    letter-spacing: .08em;
+  }
+  #wedding-planner-app .app-main {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+  #wedding-planner-app .section-stack { gap: 12px; }
+  #wedding-planner-app .section-head {
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  #wedding-planner-app .section-copy { max-width: 62ch; }
+  #wedding-planner-app .section-copy p { margin-top: 4px; }
+  #wedding-planner-app .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  #wedding-planner-app .form-grid .span-2 { grid-column: 1 / -1; }
+  #wedding-planner-app .form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    grid-column: 1 / -1;
+  }
+  #wedding-planner-app .content-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(250px, .85fr);
+    gap: 12px;
+  }
+  #wedding-planner-app .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  #wedding-planner-app .dashboard-grid .wide { grid-column: 1 / -1; }
+  #wedding-planner-app .card-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .progress-track {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--muted);
+  }
+  #wedding-planner-app .progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--dusty-pink));
+    transition: width .28s ease;
+  }
+  #wedding-planner-app .item-row,
+  #wedding-planner-app .check-row,
+  #wedding-planner-app .category-row,
+  #wedding-planner-app .timeline-row {
+    display: grid;
+    gap: 10px;
+    align-items: center;
+    padding-block: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .item-row:last-child,
+  #wedding-planner-app .check-row:last-child,
+  #wedding-planner-app .category-row:last-child,
+  #wedding-planner-app .timeline-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .item-row,
+  #wedding-planner-app .check-row,
+  #wedding-planner-app .guest-row,
+  #wedding-planner-app .calendar-event-row {
+    transition: background-color .18s ease, transform .18s ease;
+  }
+  #wedding-planner-app .viz-stat,
+  #wedding-planner-app .level-card,
+  #wedding-planner-app .calendar-day,
+  #wedding-planner-app .calendar-entry-indicator,
+  #wedding-planner-app .achievement-icon,
+  #wedding-planner-app .reward-icon {
+    transition: background-color .18s ease, transform .18s ease;
+  }
+  #wedding-planner-app .viz-stat:hover,
+  #wedding-planner-app .level-card:hover,
+  #wedding-planner-app .calendar-day:hover { transform: translateY(-2px); }
+  #wedding-planner-app .achievement-row:hover .achievement-icon,
+  #wedding-planner-app .reward-row:hover .reward-icon { transform: rotate(-5deg) scale(1.05); }
+  #wedding-planner-app .calendar-day:hover .calendar-entry-indicator { transform: rotate(3deg) scale(1.04); }
+  #wedding-planner-app .item-row:hover,
+  #wedding-planner-app .check-row:hover,
+  #wedding-planner-app .guest-row:hover,
+  #wedding-planner-app .calendar-event-row:hover {
+    background: color-mix(in srgb, var(--accent) 34%, transparent);
+  }
+  #wedding-planner-app .item-row { grid-template-columns: minmax(150px, 1.5fr) repeat(3, minmax(80px, .7fr)) auto; }
+  #wedding-planner-app .check-row { grid-template-columns: minmax(0, 1fr) auto auto; }
+  #wedding-planner-app .category-row { grid-template-columns: minmax(110px, 1.2fr) repeat(3, minmax(76px, .65fr)) auto; }
+  #wedding-planner-app .timeline-row { grid-template-columns: 70px minmax(0, 1fr) auto; }
+  #wedding-planner-app .item-main,
+  #wedding-planner-app .check-main { min-width: 0; gap: 8px; }
+  #wedding-planner-app .item-main > div,
+  #wedding-planner-app .check-main > div { min-width: 0; }
+  #wedding-planner-app .item-title { overflow-wrap: anywhere; }
+  #wedding-planner-app .item-actions { justify-content: flex-end; gap: 4px; }
+  #wedding-planner-app .item-actions .btn { padding-inline: 8px; }
+  #wedding-planner-app .budget-category-tree { display: grid; gap: 18px; }
+  #wedding-planner-app .budget-category-manager { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  #wedding-planner-app .budget-category-group + .budget-category-group { padding-top: 14px; border-top: 1px solid var(--border); }
+  #wedding-planner-app .budget-category-header { border-bottom: 1px solid var(--border); }
+  #wedding-planner-app .budget-subcategory-list { display: grid; margin-left: 8px; padding-left: 18px; border-left: 2px solid var(--border); }
+  #wedding-planner-app .budget-category-empty { margin: 0; padding: 10px 0 2px; }
+  #wedding-planner-app .budget-subcategory-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .calendar-toolbar { justify-content: space-between; }
+  #wedding-planner-app .calendar-month-card {
+    background: linear-gradient(145deg, color-mix(in srgb, var(--viz-series-3) 8%, var(--card)), color-mix(in srgb, var(--viz-series-5) 7%, var(--card)));
+  }
+  #wedding-planner-app .calendar-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr);
+    gap: 12px;
+  }
+  #wedding-planner-app .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+  }
+  #wedding-planner-app .calendar-weekday {
+    padding-block: 4px;
+    color: var(--muted-foreground);
+    text-align: center;
+  }
+  #wedding-planner-app .calendar-spacer {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+  }
+  #wedding-planner-app .calendar-day {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 7px;
+    padding: 9px;
+    overflow: hidden;
+  }
+  #wedding-planner-app .calendar-day-number {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 50%;
+    font-weight: 500;
+  }
+  #wedding-planner-app .calendar-day-top {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+  }
+  #wedding-planner-app .calendar-entry-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 6px;
+    border-radius: 999px;
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--event-color) 28%, var(--card));
+  }
+  #wedding-planner-app .calendar-day.is-today .calendar-day-number {
+    color: var(--primary-foreground);
+    background: var(--primary);
+  }
+  #wedding-planner-app .calendar-day-events {
+    display: grid;
+    width: 100%;
+    gap: 4px;
+  }
+  #wedding-planner-app .calendar-event-chip {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 3px 6px;
+    overflow: hidden;
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--event-color) 20%, transparent);
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #wedding-planner-app [data-event-series="1"] { --event-color: var(--viz-series-1); }
+  #wedding-planner-app [data-event-series="2"] { --event-color: var(--viz-series-2); }
+  #wedding-planner-app [data-event-series="3"] { --event-color: var(--viz-series-3); }
+  #wedding-planner-app [data-event-series="4"] { --event-color: var(--viz-series-4); }
+  #wedding-planner-app [data-event-series="5"] { --event-color: var(--viz-series-5); }
+  #wedding-planner-app [data-event-series="6"] { --event-color: var(--viz-series-6); }
+  #wedding-planner-app .calendar-event-row {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 8px 8px 10px;
+    border-left: 3px solid var(--event-color, var(--border));
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .calendar-event-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .guest-row {
+    display: grid;
+    grid-template-columns: minmax(170px, 1.1fr) minmax(360px, 2fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding-block: 9px;
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .guest-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .guest-main { min-width: 0; }
+  #wedding-planner-app .guest-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(115px, 1fr));
+    gap: 8px;
+  }
+  #wedding-planner-app .guest-relation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-top: 5px;
+  }
+  #wedding-planner-app .guest-filter-bar {
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 10px;
+  }
+  #wedding-planner-app .metric-number { font-variant-numeric: tabular-nums; }
+  #wedding-planner-app .viz-stat {
+    position: relative;
+    overflow: hidden;
+    --stat-accent: var(--viz-series-1);
+  }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(2) { --stat-accent: var(--viz-series-2); }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(3) { --stat-accent: var(--viz-series-3); }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(4) { --stat-accent: var(--viz-series-4); }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(5) { --stat-accent: var(--viz-series-5); }
+  #wedding-planner-app .viz-grid .viz-stat:nth-child(6) { --stat-accent: var(--viz-series-6); }
+  #wedding-planner-app .viz-stat::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--stat-accent), color-mix(in srgb, var(--stat-accent) 28%, transparent));
+  }
+  #wedding-planner-app .budget-visual {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+  }
+  #wedding-planner-app .donut-wrap { max-width: 150px; }
+  #wedding-planner-app .donut { display: block; width: 100%; height: auto; }
+  #wedding-planner-app .donut text { fill: var(--foreground); font: 500 8px var(--font-sans); }
+  #wedding-planner-app .legend-row { justify-content: space-between; gap: 8px; }
+  #wedding-planner-app .legend-label { display: flex; align-items: center; gap: 7px; min-width: 0; }
+  #wedding-planner-app .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+  #wedding-planner-app .website-link { gap: 8px; overflow-wrap: anywhere; }
+  #wedding-planner-app .empty-state { padding-block: 14px; text-align: center; }
+  #wedding-planner-app .completed .item-title { text-decoration: line-through; color: var(--muted-foreground); }
+  #wedding-planner-app .field-help { margin-top: 4px; }
+  #wedding-planner-app .status-warning { color: var(--destructive); }
+  #wedding-planner-app .sr-chart-summary { margin-top: 8px; }
+  #wedding-planner-app [hidden] { display: none !important; }
+  #wedding-planner-app .passport-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(180px, .65fr);
+    gap: 18px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--dusty-pink) 34%, transparent), transparent 29%),
+      linear-gradient(135deg, color-mix(in srgb, var(--sage-soft) 84%, var(--card)), color-mix(in srgb, var(--dusty-pink-soft) 55%, var(--card)));
+  }
+  #wedding-planner-app .passport-hero::after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    bottom: -95px;
+    width: 220px;
+    height: 220px;
+    border: 28px solid color-mix(in srgb, var(--foreground) 6%, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  #wedding-planner-app .passport-main,
+  #wedding-planner-app .passport-side { position: relative; z-index: 1; min-width: 0; }
+  #wedding-planner-app .passport-title-row,
+  #wedding-planner-app .route-line {
+    display: flex;
+    align-items: center;
+  }
+  #wedding-planner-app .passport-title-row {
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  #wedding-planner-app .passport-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+    padding-block: 10px;
+    border-block: 1px dashed var(--border);
+  }
+  #wedding-planner-app .passport-field { min-width: 0; }
+  #wedding-planner-app .passport-field p {
+    margin-top: 2px;
+    overflow-wrap: anywhere;
+  }
+  #wedding-planner-app .visa-stamp {
+    display: grid;
+    width: 66px;
+    height: 66px;
+    flex: 0 0 auto;
+    place-items: center;
+    padding: 8px;
+    border: 2px dashed var(--dusty-pink);
+    border-radius: 50%;
+    color: var(--accent-foreground);
+    text-align: center;
+    transform: rotate(-7deg);
+  }
+  #wedding-planner-app .visa-stamp span { letter-spacing: .07em; }
+  #wedding-planner-app .passport-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    padding-left: 18px;
+    border-left: 1px dashed var(--border);
+  }
+  #wedding-planner-app .route-line {
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--primary);
+  }
+  #wedding-planner-app .route-line::before,
+  #wedding-planner-app .route-line::after {
+    content: '';
+    height: 1px;
+    flex: 1 1 auto;
+    background: var(--border);
+  }
+  #wedding-planner-app .travel-countdown { font-weight: 500; }
+  #wedding-planner-app .barcode {
+    height: 28px;
+    background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--foreground) 65%, transparent) 0 1px, transparent 1px 4px, color-mix(in srgb, var(--foreground) 35%, transparent) 4px 6px, transparent 6px 9px);
+  }
+  #wedding-planner-app .passport-number {
+    color: var(--muted-foreground);
+    letter-spacing: .16em;
+    text-align: center;
+  }
+  #wedding-planner-app .quick-task-bar {
+    align-items: flex-end;
+    margin-top: 12px;
+  }
+  #wedding-planner-app .quick-task-bar .form-control { flex: 1 1 220px; }
+  #wedding-planner-app .recovery-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr);
+    gap: 18px;
+    align-items: center;
+    background: linear-gradient(115deg, color-mix(in srgb, var(--sage-soft) 64%, var(--card)), color-mix(in srgb, var(--dusty-pink-soft) 28%, var(--card)));
+  }
+  #wedding-planner-app .recovery-copy {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  #wedding-planner-app .recovery-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--primary-foreground);
+    background: var(--primary);
+  }
+  #wedding-planner-app .recovery-actions { display: grid; gap: 8px; }
+  #wedding-planner-app .reward-overview {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+    gap: 12px;
+  }
+  #wedding-planner-app .level-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 92% 10%, color-mix(in srgb, var(--viz-series-2) 28%, transparent), transparent 30%),
+      linear-gradient(135deg, color-mix(in srgb, var(--viz-series-3) 30%, var(--card)), color-mix(in srgb, var(--viz-series-1) 18%, var(--card)));
+  }
+  #wedding-planner-app .level-card::after {
+    content: '';
+    position: absolute;
+    right: -65px;
+    bottom: -95px;
+    width: 220px;
+    height: 220px;
+    border: 24px solid color-mix(in srgb, var(--foreground) 5%, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  #wedding-planner-app .level-orb {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 92px;
+    height: 92px;
+    place-items: center;
+    border-radius: 50%;
+    background: conic-gradient(var(--viz-series-4) var(--level-progress), color-mix(in srgb, var(--foreground) 10%, transparent) 0);
+  }
+  #wedding-planner-app .level-orb::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: inherit;
+    background: color-mix(in srgb, var(--card) 86%, var(--background));
+  }
+  #wedding-planner-app .level-orb-content {
+    position: relative;
+    display: grid;
+    place-items: center;
+    text-align: center;
+  }
+  #wedding-planner-app .level-number { font-weight: 500; }
+  #wedding-planner-app .level-copy { position: relative; z-index: 1; min-width: 0; }
+  #wedding-planner-app .level-title-row,
+  #wedding-planner-app .reward-row,
+  #wedding-planner-app .achievement-row {
+    display: flex;
+    align-items: center;
+  }
+  #wedding-planner-app .level-title-row { justify-content: space-between; gap: 10px; }
+  #wedding-planner-app .reward-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+  #wedding-planner-app .reward-mini-stat {
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+  }
+  #wedding-planner-app .reward-list,
+  #wedding-planner-app .achievement-list { display: grid; gap: 4px; }
+  #wedding-planner-app .achievement-groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+  #wedding-planner-app .reward-row,
+  #wedding-planner-app .achievement-row {
+    gap: 10px;
+    padding-block: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+  #wedding-planner-app .reward-row:last-child,
+  #wedding-planner-app .achievement-row:last-child { border-bottom: 0; }
+  #wedding-planner-app .reward-row-main,
+  #wedding-planner-app .achievement-copy { min-width: 0; flex: 1 1 auto; }
+  #wedding-planner-app .reward-icon,
+  #wedding-planner-app .achievement-icon {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 12px;
+    color: var(--foreground);
+    background: color-mix(in srgb, var(--reward-color) 24%, transparent);
+  }
+  #wedding-planner-app [data-reward-series="1"] { --reward-color: var(--viz-series-1); }
+  #wedding-planner-app [data-reward-series="2"] { --reward-color: var(--viz-series-2); }
+  #wedding-planner-app [data-reward-series="3"] { --reward-color: var(--viz-series-3); }
+  #wedding-planner-app [data-reward-series="4"] { --reward-color: var(--viz-series-4); }
+  #wedding-planner-app [data-reward-series="5"] { --reward-color: var(--viz-series-5); }
+  #wedding-planner-app [data-reward-series="6"] { --reward-color: var(--viz-series-6); }
+  #wedding-planner-app .reward-progress { height: 6px; margin-top: 5px; }
+  #wedding-planner-app .reward-progress .progress-fill { background: var(--reward-color); }
+  #wedding-planner-app .achievement-row.is-locked { opacity: .62; }
+  #wedding-planner-app .achievement-row.is-unlocked .achievement-icon {
+    color: var(--primary-foreground);
+    background: var(--reward-color);
+  }
+  #wedding-planner-app .reward-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 4px solid var(--viz-series-4);
+    background: linear-gradient(100deg, color-mix(in srgb, var(--viz-series-4) 18%, var(--card)), color-mix(in srgb, var(--viz-series-3) 10%, var(--card)));
+  }
+  #wedding-planner-app .reward-toast-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--primary-foreground);
+    background: var(--viz-series-4);
+  }
+  #wedding-planner-app .seating-workspace {
+    display: grid;
+    grid-template-columns: minmax(185px, 220px) minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+  #wedding-planner-app .seating-tools,
+  #wedding-planner-app .seating-inspector,
+  #wedding-planner-app .seating-tool-section,
+  #wedding-planner-app .seating-selected-fields,
+  #wedding-planner-app .seating-guest-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #wedding-planner-app .seating-tool-section + .seating-tool-section {
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  #wedding-planner-app .seating-button-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  #wedding-planner-app .seating-stage { min-width: 0; }
+  #wedding-planner-app .seating-canvas-wrap {
+    position: relative;
+    height: clamp(390px, 58vw, 590px);
+    min-width: 0;
+    overflow: hidden;
+    background: var(--muted);
+  }
+  #wedding-planner-app #seat-plan-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    touch-action: none;
+  }
+  #wedding-planner-app #seat-plan-canvas.dragging { cursor: grabbing; }
+  #wedding-planner-app .seating-status {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    max-width: calc(100% - 20px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #wedding-planner-app .seating-inspector {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  }
+  #wedding-planner-app .seating-selected-fields {
+    padding-right: 12px;
+    border-right: 1px dashed var(--border);
+  }
+  #wedding-planner-app .seating-inline-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  #wedding-planner-app .seating-help { margin-top: 4px; }
+
+  @media (max-width: 840px) {
+    #wedding-planner-app .app-shell { display: block; }
+    #wedding-planner-app .app-sidebar { position: static; margin-bottom: 12px; }
+    #wedding-planner-app .nav-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    #wedding-planner-app .sidebar-foot { display: none; }
+    #wedding-planner-app .content-split { grid-template-columns: 1fr; }
+    #wedding-planner-app .recovery-panel { grid-template-columns: 1fr; }
+    #wedding-planner-app .reward-overview,
+    #wedding-planner-app .calendar-detail-layout,
+    #wedding-planner-app .achievement-groups { grid-template-columns: 1fr; }
+    #wedding-planner-app .seating-workspace { grid-template-columns: 1fr; }
+    #wedding-planner-app .seating-tools {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #wedding-planner-app .seating-tool-section + .seating-tool-section {
+      padding-top: 0;
+      padding-left: 12px;
+      border-top: 0;
+      border-left: 1px dashed var(--border);
+    }
+  }
+  @media (max-width: 620px) {
+    #wedding-planner-app .app-header,
+    #wedding-planner-app .section-head { align-items: flex-start; flex-direction: column; }
+    #wedding-planner-app .header-actions { justify-content: flex-start; }
+    #wedding-planner-app .nav-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #wedding-planner-app .dashboard-grid,
+    #wedding-planner-app .form-grid { grid-template-columns: 1fr; }
+    #wedding-planner-app .form-grid .span-2 { grid-column: auto; }
+    #wedding-planner-app .item-row,
+    #wedding-planner-app .category-row { grid-template-columns: 1fr 1fr; }
+    #wedding-planner-app .item-row .item-main,
+    #wedding-planner-app .item-row .item-actions,
+    #wedding-planner-app .category-row .category-main,
+    #wedding-planner-app .category-row .item-actions { grid-column: 1 / -1; }
+    #wedding-planner-app .item-actions { justify-content: flex-start; }
+    #wedding-planner-app .guest-row { grid-template-columns: 1fr; }
+    #wedding-planner-app .guest-row .guest-main,
+    #wedding-planner-app .guest-row .guest-status-grid,
+    #wedding-planner-app .guest-row .item-actions { grid-column: 1 / -1; }
+    #wedding-planner-app .calendar-grid { gap: 4px; }
+    #wedding-planner-app .calendar-day,
+    #wedding-planner-app .calendar-spacer { min-height: 0; }
+    #wedding-planner-app .calendar-day { gap: 4px; padding: 5px; }
+    #wedding-planner-app .calendar-day-number { width: 24px; height: 24px; }
+    #wedding-planner-app .calendar-entry-indicator {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      padding: 2px;
+    }
+    #wedding-planner-app .calendar-entry-indicator span { display: none; }
+    #wedding-planner-app .calendar-event-chip {
+      width: 7px;
+      height: 7px;
+      padding: 0;
+      border-radius: 50%;
+      color: transparent;
+    }
+    #wedding-planner-app .calendar-day-events { display: flex; gap: 3px; }
+    #wedding-planner-app .calendar-event-row { grid-template-columns: 58px minmax(0, 1fr); }
+    #wedding-planner-app .calendar-event-row .item-actions { grid-column: 1 / -1; }
+    #wedding-planner-app .budget-subcategory-list { margin-left: 2px; padding-left: 10px; }
+    #wedding-planner-app .budget-visual { grid-template-columns: 1fr; }
+    #wedding-planner-app .donut-wrap { margin-inline: auto; }
+    #wedding-planner-app .passport-hero { grid-template-columns: 1fr; }
+    #wedding-planner-app .level-card { grid-template-columns: 1fr; }
+    #wedding-planner-app .level-orb { width: 78px; height: 78px; }
+    #wedding-planner-app .passport-side {
+      padding-top: 14px;
+      padding-left: 0;
+      border-top: 1px dashed var(--border);
+      border-left: 0;
+    }
+    #wedding-planner-app .seating-tools,
+    #wedding-planner-app .seating-inspector { grid-template-columns: 1fr; }
+    #wedding-planner-app .seating-tool-section + .seating-tool-section,
+    #wedding-planner-app .seating-selected-fields {
+      padding-top: 10px;
+      padding-right: 0;
+      padding-left: 0;
+      border-top: 1px dashed var(--border);
+      border-right: 0;
+      border-left: 0;
+    }
+    #wedding-planner-app .seating-canvas-wrap { height: 430px; }
+  }
+  @media (max-width: 390px) {
+    #wedding-planner-app .check-row { grid-template-columns: minmax(0, 1fr) auto; }
+    #wedding-planner-app .check-row .check-date { grid-column: 1 / -1; padding-left: 32px; }
+    #wedding-planner-app .timeline-row { grid-template-columns: 56px minmax(0, 1fr); }
+    #wedding-planner-app .timeline-row .item-actions { grid-column: 1 / -1; }
+    #wedding-planner-app .passport-details { grid-template-columns: 1fr; }
+    #wedding-planner-app .guest-status-grid { grid-template-columns: 1fr; }
+    #wedding-planner-app .reward-mini-stats { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #wedding-planner-app .progress-fill,
+    #wedding-planner-app .item-row,
+    #wedding-planner-app .check-row,
+    #wedding-planner-app .guest-row,
+    #wedding-planner-app .calendar-event-row,
+    #wedding-planner-app .nav-list .btn,
+    #wedding-planner-app .viz-stat,
+    #wedding-planner-app .level-card,
+    #wedding-planner-app .calendar-day,
+    #wedding-planner-app .calendar-entry-indicator,
+    #wedding-planner-app .achievement-icon,
+    #wedding-planner-app .reward-icon,
+    #wedding-planner-app .wildflower-sprig svg { transition: none; }
+  }
